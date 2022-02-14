@@ -1,20 +1,68 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// import { StatusBar } from 'expo-status-bar';
+import React, {Component} from 'react';
+// import { StyleSheet, Text, View } from 'react-native';
+import IonIcons from 'react-native-vector-icons/Ionicons';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import HomeScreen from './components/HomeScreen';
+import SettingsScreen from './components/SettingsScreen';
+// import LoginScreen from './components/LoginScreen';
+import PostScreen from './components/PostScreen';
+// import FriendsScreen from './components/FriendsScreen';
+
+import {NavigationContainer, DarkTheme} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
+const themeColor = '#9487f2'; // 'Let' used for variables
+
+/**
+ * Main App.js constructor to connect components together.
+ */
+class Spacebook extends Component {
+  /**
+ * Renders the tab navigator at the bottom of the screen.
+ * @return {NavigationContainer} The tab navigator.
+ */
+  render() {
+    return (
+      <NavigationContainer theme={DarkTheme}>
+        <Tab.Navigator
+          screenOptions={({route}) => (
+            {tabBarIcon: ({color, size}) => {
+              if (route.name == 'Home') {
+                return <IonIcons
+                  name={'planet-outline'}
+                  size={size}
+                  color={color} />;
+              } else if (route.name == 'New Post') {
+                return <IonIcons
+                  name={'add-circle-outline'}
+                  size={size}
+                  color={color} />;
+              } else if (route.name == 'Friends') {
+                return <IonIcons
+                  name={'people-outline'}
+                  size={size}
+                  color={color} />;
+              } else if (route.name == 'Settings') {
+                return <IonIcons
+                  name={'settings-outline'}
+                  size={size}
+                  color={color} />;
+              }
+            },
+            tabBarActiveTintColor: themeColor,
+            tabBarInactiveTintColor: 'gray',
+            })}>
+
+          <Tab.Screen name = 'Home' component = {HomeScreen}/>
+          <Tab.Screen name = 'New Post' component = {PostScreen} />
+          <Tab.Screen name = 'Friends' component = {SettingsScreen} />
+          <Tab.Screen name = 'Settings' component = {SettingsScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default Spacebook;
