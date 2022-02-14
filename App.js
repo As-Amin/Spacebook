@@ -13,7 +13,7 @@ import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 const Tab = createBottomTabNavigator();
-const themeColor = '#9487f2'; // 'Let' used for variables
+const themeColor = '#ff8a5b';
 
 /**
  * Main App.js constructor to connect components together.
@@ -55,10 +55,10 @@ class Spacebook extends Component {
             tabBarInactiveTintColor: 'gray',
             })}>
 
-          <Tab.Screen name = 'Home' component = {HomeScreen}/>
-          <Tab.Screen name = 'New Post' component = {PostScreen} />
-          <Tab.Screen name = 'Friends' component = {SettingsScreen} />
-          <Tab.Screen name = 'Settings' component = {SettingsScreen} />
+          <Tab.Screen name='Home' component={HomeScreen}/>
+          <Tab.Screen name='New Post' component={PostScreen} />
+          <Tab.Screen name='Friends' component={SettingsScreen} />
+          <Tab.Screen name='Settings' component={SettingsScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     );
