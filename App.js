@@ -36,6 +36,7 @@ class Spacebook extends Component {
           <Stack.Screen
             name="TabNavigateScreen"
             component={TabNavigateScreen}
+            options={{headerShown: false}}
           />
         </Stack.Navigator>
       </NavigationContainer>

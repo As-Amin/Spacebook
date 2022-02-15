@@ -17,8 +17,8 @@ class SignUpScreen extends Component {
     super(props);
 
     this.state = {
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
     };
@@ -62,13 +62,15 @@ class SignUpScreen extends Component {
           <Text style={styles.title}>Sign up</Text>
           <TextInput style={styles.textInput}
             placeholder="Enter your first name..."
-            onChangeText={(firstName) => this.setState({firstName})}
-            value={this.state.firstName}
+            // eslint-disable-next-line camelcase
+            onChangeText={(first_name) => this.setState({first_name})}
+            value={this.state.first_name}
           />
           <TextInput style={styles.textInput}
             placeholder="Enter your last name..."
-            onChangeText={(lastName) => this.setState({lastName})}
-            value={this.state.lastName}
+            // eslint-disable-next-line camelcase
+            onChangeText={(last_name) => this.setState({last_name})}
+            value={this.state.last_name}
           />
           <TextInput style={styles.textInput}
             placeholder="Enter your email..."
