@@ -1,6 +1,4 @@
-// import { StatusBar } from 'expo-status-bar';
 import React, {Component} from 'react';
-// import { StyleSheet, Text, View } from 'react-native';
 
 import LoginScreen from './components/LoginScreen';
 import SignUpScreen from './components/SignUpScreen';
@@ -16,6 +14,11 @@ const Stack = createStackNavigator();
  * Main App.js constructor to connect components together.
  */
 class Spacebook extends Component {
+  /**
+ * Main App.js constructor to connect components together.
+ * @return {NavigationContainer} The stack navigator for logging in,
+ * signing up and the other screens post log in
+ */
   render() {
     return (
       <NavigationContainer theme = {DarkTheme}>
@@ -23,12 +26,12 @@ class Spacebook extends Component {
           <Stack.Screen
             name="Login"
             component={LoginScreen}
-            options={{ title: 'Login' }}
+            options={{title: 'Sign in'}}
           />
           <Stack.Screen
             name="SignUp"
             component={SignUpScreen}
-            options={{ title: 'Sign Up' }}
+            options={{title: 'Back'}}
           />
           <Stack.Screen
             name="TabNavigateScreen"
