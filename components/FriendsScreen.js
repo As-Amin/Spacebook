@@ -6,7 +6,7 @@ class FriendsScreen extends Component {
   render() {
     return (
       <View>
-        <Button title="About Me" onPress={() => this.props.navigation.navigate('About')}/>
+        <Button title="Test Button" onPress={() => this.props.navigation.navigate('About')}/>
       </View>
     );
   }

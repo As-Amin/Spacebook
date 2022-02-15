@@ -1,65 +1,40 @@
 // import { StatusBar } from 'expo-status-bar';
 import React, {Component} from 'react';
 // import { StyleSheet, Text, View } from 'react-native';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 
-import HomeScreen from './components/HomeScreen';
-import SettingsScreen from './components/SettingsScreen';
-// import LoginScreen from './components/LoginScreen';
-import PostScreen from './components/PostScreen';
-// import FriendsScreen from './components/FriendsScreen';
+import LoginScreen from './components/LoginScreen';
+import SignUpScreen from './components/SignUpScreen';
+import TabNavigateScreen from './components/TabNavigateScreen';
 
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
+import 'react-native-gesture-handler';
 
-const Tab = createBottomTabNavigator();
-const themeColor = '#ff8a5b';
+const Stack = createStackNavigator();
 
 /**
  * Main App.js constructor to connect components together.
  */
 class Spacebook extends Component {
-  /**
- * Renders the tab navigator at the bottom of the screen.
- * @return {NavigationContainer} The tab navigator.
- */
   render() {
     return (
-      <NavigationContainer theme={DarkTheme}>
-        <Tab.Navigator
-          screenOptions={({route}) => (
-            {tabBarIcon: ({color, size}) => {
-              if (route.name == 'Home') {
-                return <IonIcons
-                  name={'planet-outline'}
-                  size={size}
-                  color={color} />;
-              } else if (route.name == 'New Post') {
-                return <IonIcons
-                  name={'add-circle-outline'}
-                  size={size}
-                  color={color} />;
-              } else if (route.name == 'Friends') {
-                return <IonIcons
-                  name={'people-outline'}
-                  size={size}
-                  color={color} />;
-              } else if (route.name == 'Settings') {
-                return <IonIcons
-                  name={'settings-outline'}
-                  size={size}
-                  color={color} />;
-              }
-            },
-            tabBarActiveTintColor: themeColor,
-            tabBarInactiveTintColor: 'gray',
-            })}>
-
-          <Tab.Screen name='Home' component={HomeScreen}/>
-          <Tab.Screen name='New Post' component={PostScreen} />
-          <Tab.Screen name='Friends' component={SettingsScreen} />
-          <Tab.Screen name='Settings' component={SettingsScreen} />
-        </Tab.Navigator>
+      <NavigationContainer theme = {DarkTheme}>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ title: 'Login' }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ title: 'Sign Up' }}
+          />
+          <Stack.Screen
+            name="TabNavigateScreen"
+            component={TabNavigateScreen}
+          />
+        </Stack.Navigator>
       </NavigationContainer>
     );
   }

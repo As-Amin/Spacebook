@@ -2,11 +2,11 @@ import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, Text, View, Button, SafeAreaView} from 'react-native';
 import React, {Component} from 'react';
 
-class PostScreen extends Component {
+class SettingsScreen extends Component {
   render() {
     return (
       <View>
-        <Button title="Test Button" onPress={() => this.props.navigation.navigate('About')}/>
+        <Button title="About Me" onPress={() => this.props.navigation.navigate('About')}/>
       </View>
     );
   }
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostScreen;
+export default SettingsScreen;

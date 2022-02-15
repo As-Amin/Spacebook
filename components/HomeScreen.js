@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
     flex: 3,
     width: 500,
     height: 100,
-    backgroundColor: 'lightsalmon',
   },
   text: {
     fontSize: 16,
