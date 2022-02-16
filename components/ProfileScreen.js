@@ -2,7 +2,7 @@ import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, Text, View, Button, SafeAreaView} from 'react-native';
 import React, {Component} from 'react';
 
-class SettingsScreen extends Component {
+class ProfileScreen extends Component {
   render() {
     return (
       <View>
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;
+export default ProfileScreen;

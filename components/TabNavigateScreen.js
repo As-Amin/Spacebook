@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 import HomeScreen from './HomeScreen';
-import SettingsScreen from './SettingsScreen';
+import ProfileScreen from './ProfileScreen';
 import PostScreen from './PostScreen';
 import FriendsScreen from './FriendsScreen';
 
@@ -38,9 +38,9 @@ class TabNavigateScreen extends Component {
                 name={'people-outline'}
                 size={size}
                 color={color} />;
-            } else if (route.name == 'Settings') {
+            } else if (route.name == 'Profile') {
               return <IonIcons
-                name={'settings-outline'}
+                name={'person-outline'}
                 size={size}
                 color={color} />;
             }
@@ -49,10 +49,11 @@ class TabNavigateScreen extends Component {
           tabBarInactiveTintColor: 'gray',
           })}>
 
-        <Tab.Screen name='Home' component={HomeScreen}/>
+        <Tab.Screen name='Home' component={HomeScreen}
+          options={{headerShown: false}}/>
         <Tab.Screen name='New Post' component={PostScreen} />
-        <Tab.Screen name='Friends' component={SettingsScreen} />
-        <Tab.Screen name='Settings' component={SettingsScreen} />
+        <Tab.Screen name='Friends' component={FriendsScreen} />
+        <Tab.Screen name='Profile' component={ProfileScreen} />
       </Tab.Navigator>
     );
   }

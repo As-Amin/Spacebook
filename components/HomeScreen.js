@@ -1,10 +1,9 @@
 // import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, View, Text, ScrollView} from 'react-native';
+import {StyleSheet, View, Text, ScrollView, FlatList} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoginScreen from './LoginScreen';
+import {Colors} from './constants/colors.js';
 
-// const themeColor = '#9487f2';
 // Scroll view for all chats, function to produce boxes with text posts
 
 /**
@@ -27,12 +26,13 @@ class HomeScreen extends Component {
   }
 
   /**
-  * Instantiate network request to load data
+  * Instantiate network request to load data, call the function to retrieve data
   */
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.checkIfLoggedIn();
+      this.checkLoggedIn();
     });
+    this.getData();
   }
 
   /**
@@ -58,18 +58,11 @@ class HomeScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate(LoginScreen);
-          } else if (response.status === 403) {
-            return response.json();
-          } else if (response.status === 404) {
-            return response.json();
-          } else if (response.status === 404) {
-            return response.json();
+            this.props.navigation.navigate('Login');
           } else {
             throw new Error('Something went wrong');
           }
         })
-        .then((response) => response.json())
         .then((responseJson) => {
           this.setState({
             isLoading: false,
@@ -81,7 +74,7 @@ class HomeScreen extends Component {
         });
   };
 
-  checkIfLoggedIn = async () => {
+  checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
@@ -94,29 +87,37 @@ class HomeScreen extends Component {
   * @return {View} The loading text.
   * @return {View} The scrollable view for the posts.
   */
+  /**
+  * Renders the home page and all of its contents.
+  * @return {View} The loading text.
+  * @return {View} The scrollable view for the posts.
+  */
   render() {
-    if (this.state.isLoading === true) {
+    if (this.state.isLoading) {
       return (
-        <View style={styles.flexContainerLoading}>
-          <Text style={styles.text}>
+        <View style={styles.flexContainer}>
+          <Text style={styles.title}>Home</Text>
+          <ScrollView style={styles.scrollView}>
+            <Text style={styles.text}>
             Loading posts...
-          </Text>
+            </Text>
+          </ScrollView>
         </View>
       );
     } else {
       return (
-        <View style={styles.flexContainer}>
-          <ScrollView style={styles.scrollView}>
+        <View>
+          <Text style={styles.title}>Home</Text>
+          <FlatList style={styles.scrollView}
             data={this.state.listData}
             renderItem={({item}) => (
               <View>
                 <Text style={styles.text}>
-                  {item.first_name} {item.last_name}
-                </Text>
+                  {item.user_givenname} {item.user_familyname}</Text>
               </View>
             )}
             keyExtractor={(item, index) => item.user_id.toString()}
-          </ScrollView>
+          />
         </View>
       );
     }
@@ -124,32 +125,27 @@ class HomeScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  flexContainerLoading: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   flexContainer: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingLeft: 50,
   },
   scrollView: {
-    flex: 1,
-    paddingRight: 10,
-    paddingTop: 10,
-  },
-  viewTwo: {
-    flex: 3,
-    width: 500,
-    height: 100,
+    paddingLeft: 12,
+    paddingRight: 5,
   },
   text: {
     fontSize: 16,
-    color: '#FFFFFF',
+    color: Colors.text,
+  },
+  title: {
+    padding: 5,
+    margin: 5,
+    marginTop: 10,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    fontSize: '350%',
+    color: Colors.text,
   },
 });
-
 export default HomeScreen;
