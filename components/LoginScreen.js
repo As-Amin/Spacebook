@@ -39,9 +39,9 @@ class LoginScreen extends Component {
           }
         })
         .then(async (responseJson) => {
-          console.log(responseJson);
+          await AsyncStorage.setItem('@user_id', responseJson.id);
           await AsyncStorage.setItem('@session_token', responseJson.token);
-          this.props.navigation.navigate('TabNavigateScreen');
+          this.props.navigation.navigate('PostLogin');
         })
         .catch((error) => {
           console.log(error);

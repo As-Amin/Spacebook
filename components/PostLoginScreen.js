@@ -2,10 +2,9 @@
 import React, {Component} from 'react';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
-import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
-import PostScreen from './PostScreen';
 import FriendsScreen from './FriendsScreen';
+import FriendRequestsScreen from './FriendRequestsScreen';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Colors} from './constants/colors.js';
@@ -23,14 +22,9 @@ class TabNavigateScreen extends Component {
       <Tab.Navigator
         screenOptions={({route}) => (
           {tabBarIcon: ({color, size}) => {
-            if (route.name == 'Home') {
+            if (route.name == 'Profile') {
               return <IonIcons
-                name={'planet-outline'}
-                size={size}
-                color={color} />;
-            } else if (route.name == 'New Post') {
-              return <IonIcons
-                name={'add-circle-outline'}
+                name={'person-outline'}
                 size={size}
                 color={color} />;
             } else if (route.name == 'Friends') {
@@ -38,9 +32,9 @@ class TabNavigateScreen extends Component {
                 name={'people-outline'}
                 size={size}
                 color={color} />;
-            } else if (route.name == 'Profile') {
+            } else if (route.name == 'Friend Requests') {
               return <IonIcons
-                name={'person-outline'}
+                name={'person-add-outline'}
                 size={size}
                 color={color} />;
             }
@@ -49,11 +43,10 @@ class TabNavigateScreen extends Component {
           tabBarInactiveTintColor: 'gray',
           })}>
 
-        <Tab.Screen name='Home' component={HomeScreen}
+        <Tab.Screen name='Profile' component={ProfileScreen}
           options={{headerShown: false}}/>
-        <Tab.Screen name='New Post' component={PostScreen} />
         <Tab.Screen name='Friends' component={FriendsScreen} />
-        <Tab.Screen name='Profile' component={ProfileScreen} />
+        <Tab.Screen name='Friend Requests' component={FriendRequestsScreen} />
       </Tab.Navigator>
     );
   }

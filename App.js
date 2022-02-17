@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import LoginScreen from './components/LoginScreen';
 import SignUpScreen from './components/SignUpScreen';
-import TabNavigateScreen from './components/TabNavigateScreen';
+import PostLoginScreen from './components/PostLoginScreen';
 
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -34,8 +34,8 @@ class Spacebook extends Component {
             options={{title: 'Back'}}
           />
           <Stack.Screen
-            name="TabNavigateScreen"
-            component={TabNavigateScreen}
+            name="PostLogin"
+            component={PostLoginScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   scrollView: {
-    marginBottom: '50%',
+    marginTop: '50%',
     paddingLeft: 5,
     paddingRight: 5,
   },

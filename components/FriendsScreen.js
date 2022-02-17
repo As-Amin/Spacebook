@@ -2,6 +2,7 @@ import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, Text, View, Button, SafeAreaView} from 'react-native';
 import React, {Component} from 'react';
 
+
 class FriendsScreen extends Component {
   render() {
     return (
