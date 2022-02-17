@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, StyleSheet, View, TextInput, ScrollView}
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
+import IonIcons from 'react-native-vector-icons/Ionicons';
 
 /**
  * Logic Screen class prompting users to create an account or sign in.
@@ -57,22 +58,29 @@ class LoginScreen extends Component {
     return (
       <View style={styles.flexContainer}>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.title}>Spacebook</Text>
+          <Text style={styles.title}>
+            <IonIcons style={styles.logo}
+              name={'planet-outline'}
+            /> Spacebook</Text>
+
           <TextInput style={styles.textInput}
             placeholder="Enter your email..."
             onChangeText={(email) => this.setState({email})}
             value={this.state.email}
           />
+
           <TextInput style={styles.textInput}
             placeholder="Enter your password..."
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             secureTextEntry
           />
+
           <TouchableOpacity style={styles.button}
             onPress={() => this.login()}>
             <Text style={styles.text}>Login</Text>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.button}
             onPress={() => this.props.navigation.navigate('SignUp')}>
             <Text style={styles.text}>Do not have an account?</Text>
@@ -124,8 +132,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     fontWeight: 'bold',
-    fontSize: '350%',
+    fontSize: '300%',
     color: Colors.text,
+  },
+  logo: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: '100%',
+    color: Colors.theme,
   },
 });
 
