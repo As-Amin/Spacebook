@@ -95,11 +95,11 @@ const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
   scrollView: {
-    marginTop: '50%',
+    marginBottom: '10%',
     paddingLeft: 5,
     paddingRight: 5,
   },
@@ -110,10 +110,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: 16,
     fontWeight: 'bold',
+    backgroundColor: Colors.lighterBackground,
     color: Colors.text,
   },
   button: {
-    padding: 5,
+    padding: 10,
     margin: 5,
     fontSize: 16,
     borderRadius: 10,

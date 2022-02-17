@@ -43,10 +43,13 @@ class TabNavigateScreen extends Component {
           tabBarInactiveTintColor: 'gray',
           })}>
 
-        <Tab.Screen name='Profile' component={ProfileScreen}
+        <Tab.Screen name='Profile'
+          component={ProfileScreen}
           options={{headerShown: false}}/>
-        <Tab.Screen name='Friends' component={FriendsScreen} />
-        <Tab.Screen name='Friend Requests' component={FriendRequestsScreen} />
+        <Tab.Screen name='Friends'
+          component={FriendsScreen} />
+        <Tab.Screen name='Friend Requests'
+          component={FriendRequestsScreen} />
       </Tab.Navigator>
     );
   }
