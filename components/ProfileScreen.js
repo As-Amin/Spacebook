@@ -5,7 +5,6 @@ import {StyleSheet, View, Text, FlatList,
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 
 // Scroll view for all chats, function to produce boxes with text posts
 
@@ -112,6 +111,71 @@ class ProfileScreen extends Component {
         });
   };
 
+  /**
+  * Function which sends a POST request to like a post
+  * into the the DOM tree from server.
+  * @param {int} postId The identifier for the post to like
+  * @return {state} The states loading config and list data
+  */
+  likePost = async (postId) => {
+    // Store the user id as a constant - retrieved from async storage
+    const userId = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/post/' + postId.toString() + '/like', {
+      'method': 'POST', // POST request as sending request to like post
+      'headers': {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else if (response.status === 403) {
+            throw new Error('You have already liked this post!');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseJson) => {})
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
+  /**
+  * Function which sends a DELETE request to delete a post
+  * into the the DOM tree from server.
+  * @param {int} postId The identifier for the post to delete
+  * @return {state} The states loading config and list data
+  */
+  deletePost = async (postId) => {
+    // Store the user id as a constant - retrieved from async storage
+    const userId = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/post/' + postId.toString(), {
+      'method': 'DELETE',
+      'headers': {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else if (response.status === 403) {
+            throw new Error('You can only delete your own posts!');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseJson) => {})
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
 
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
@@ -168,7 +232,7 @@ class ProfileScreen extends Component {
                   </TouchableOpacity>
 
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.deletePost(item.post_id)}>
                     <Text style={styles.buttonText}>Delete</Text>
                   </TouchableOpacity>
 
@@ -178,7 +242,7 @@ class ProfileScreen extends Component {
                   </TouchableOpacity>
 
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.likePost(item.post_id)}>
                     <Text style={styles.buttonText}>Like</Text>
                   </TouchableOpacity>
 
