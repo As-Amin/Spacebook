@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 /* eslint-disable no-trailing-spaces */
 // import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList, 
@@ -5,8 +6,6 @@ import {StyleSheet, View, Text, FlatList,
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
-
-// Scroll view for all chats, function to produce boxes with text posts
 
 /**
  * Home Screen class displaying users home page including posts.
@@ -22,6 +21,7 @@ class ProfileScreen extends Component {
 
     // State object to store all data
     this.state = {
+      userId: '',
       isLoading: true,
       listData: [],
     };
@@ -45,47 +45,17 @@ class ProfileScreen extends Component {
   }
 
   /**
-  * Function loading friends into the the DOM tree from server.
-  * @return {state} The states loading config and list data
-  */
-  getData = async () => {
-    // Store the auth key as a constant - retrieved from async storage
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search', {
-      'headers': {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            listData: responseJson,
-          });
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
-  };
-
-  /**
   * Function loading users posts into the the DOM tree from server.
   * @return {state} The states loading config and list data
   */
   getPosts = async () => {
     // Store the user id as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
+    const user = await AsyncStorage.getItem('@user_id');
+    this.setState({userId: user});
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/post', {
-      'headers': {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post', {
+      method: 'GET',  
+      headers: {
         'X-Authorization': token, // Assign the auth key to verify account
       },
     })
@@ -115,15 +85,17 @@ class ProfileScreen extends Component {
   * Function which sends a POST request to like a post
   * into the the DOM tree from server.
   * @param {int} postId The identifier for the post to like
+  * @param {int} postUserId The user id that posted the post
   * @return {state} The states loading config and list data
   */
   likePost = async (postId) => {
     // Store the user id as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
+    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/post/' + postId.toString() + '/like', {
-      'method': 'POST', // POST request as sending request to like post
-      'headers': {
+    
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString() + '/like', {
+      method: 'POST', // POST request as sending request to like post
+      headers: {
         'X-Authorization': token, // Assign the auth key to verify account
       },
     })
@@ -138,7 +110,6 @@ class ProfileScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .then((responseJson) => {})
         .catch((error) =>{
           console.log(error);
         });
@@ -152,11 +123,12 @@ class ProfileScreen extends Component {
   */
   deletePost = async (postId) => {
     // Store the user id as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
+    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/post/' + postId.toString(), {
-      'method': 'DELETE',
-      'headers': {
+
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString(), {
+      method: 'DELETE',
+      headers: {
         'X-Authorization': token, // Assign the auth key to verify account
       },
     })
@@ -171,7 +143,6 @@ class ProfileScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .then((responseJson) => {})
         .catch((error) =>{
           console.log(error);
         });
@@ -186,7 +157,7 @@ class ProfileScreen extends Component {
   };
 
   /**
-  * Renders the home page and all of its contents.
+  * Renders the profile page and all of its contents.
   * @return {View} The loading text.
   * @return {View} The scrollable view for the posts.
   */
@@ -203,13 +174,12 @@ class ProfileScreen extends Component {
         </View>
       );
     } else {
-      console.log(this.state.listData);
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Profile</Text>
           <FlatList style={styles.flatList}
             data={this.state.listData}
-            renderItem={({item}) => (
+            renderItem={({item, index}) => (
               <View style={styles.postBackground}>
                 <Text style={styles.boldText}>
                   {'Post from ' + item.author.first_name + ' ' + 
@@ -240,19 +210,21 @@ class ProfileScreen extends Component {
                     onPress={() => console.log('worked')}>
                     <Text style={styles.buttonText}>Update</Text>
                   </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => this.likePost(item.post_id)}>
-                    <Text style={styles.buttonText}>Like</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>Dislike</Text>
-                  </TouchableOpacity>
+                  
+                  {item.author.user_id.toString() === 
+                    this.state.userId.toString() ?  
+                    <></> : 
+                    <><TouchableOpacity style={styles.button}
+                      onPress={() => this.likePost(item.post_id)}>
+                      <Text style={styles.buttonText}>Like</Text>
+                    </TouchableOpacity><TouchableOpacity style={styles.button}
+                      onPress={() => console.log('worked')}>
+                      <Text style={styles.buttonText}>Dislike</Text>
+                    </TouchableOpacity></> }
                 </View>
               </View>
             )}
+            keyExtractor={(item, index) => item.post_id.toString()}
           />
         </View>
       );
@@ -275,14 +247,13 @@ const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
     justifyContent: 'space-between',
   },
   flexContainerButtons: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
-    justifyContent: 'space-between',
   },
   flatList: {
     paddingLeft: 5,

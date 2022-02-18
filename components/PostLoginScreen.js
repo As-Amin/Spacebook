@@ -5,6 +5,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import ProfileScreen from './ProfileScreen';
 import FriendsScreen from './FriendsScreen';
 import FriendRequestsScreen from './FriendRequestsScreen';
+import AccountScreen from './AccountScreen';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Colors} from './constants/colors.js';
@@ -37,6 +38,11 @@ class TabNavigateScreen extends Component {
                 name={'person-add-outline'}
                 size={size}
                 color={color} />;
+            } else if (route.name == 'Account') {
+              return <IonIcons
+                name={'settings-outline'}
+                size={size}
+                color={color} />;
             }
           },
           tabBarActiveTintColor: Colors.theme,
@@ -47,9 +53,12 @@ class TabNavigateScreen extends Component {
           component={ProfileScreen}
           options={{headerShown: false}}/>
         <Tab.Screen name='Friends'
-          component={FriendsScreen} />
+          component={FriendsScreen}
+          options={{headerShown: false}} />
         <Tab.Screen name='Friend Requests'
           component={FriendRequestsScreen} />
+        <Tab.Screen name='Account'
+          component={AccountScreen} />
       </Tab.Navigator>
     );
   }

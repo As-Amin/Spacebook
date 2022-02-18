@@ -25,8 +25,10 @@ class SignUpScreen extends Component {
   }
 
   signup = () => {
+    // Validation here
+
     return fetch('http://localhost:3333/api/1.0.0/user', {
-      method: 'post',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   button: {
-    padding: 10,
+    padding: 7.5,
     margin: 5,
     fontSize: 16,
     borderRadius: 10,

@@ -6,7 +6,7 @@ import {Colors} from './constants/colors.js';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 /**
- * Logic Screen class prompting users to create an account or sign in.
+ * Login Screen class prompting users to create an account or sign in.
  */
 class LoginScreen extends Component {
   /**
@@ -24,7 +24,7 @@ class LoginScreen extends Component {
 
   login = async () => {
     return fetch('http://localhost:3333/api/1.0.0/login', {
-      method: 'post',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -42,6 +42,12 @@ class LoginScreen extends Component {
         .then(async (responseJson) => {
           await AsyncStorage.setItem('@user_id', responseJson.id);
           await AsyncStorage.setItem('@session_token', responseJson.token);
+          // Security - Reset email and password variables once logged in
+          // so not saved when logged out
+          this.setState({
+            email: '',
+            password: '',
+          });
           this.props.navigation.navigate('PostLogin');
         })
         .catch((error) => {
@@ -114,7 +120,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   button: {
-    padding: 10,
+    padding: 7.5,
     margin: 5,
     fontSize: 16,
     borderRadius: 10,
