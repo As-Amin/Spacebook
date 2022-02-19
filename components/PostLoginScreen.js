@@ -56,9 +56,11 @@ class TabNavigateScreen extends Component {
           component={FriendsScreen}
           options={{headerShown: false}} />
         <Tab.Screen name='Friend Requests'
-          component={FriendRequestsScreen} />
+          component={FriendRequestsScreen}
+          options={{headerShown: false}} />
         <Tab.Screen name='Account'
-          component={AccountScreen} />
+          component={AccountScreen}
+          options={{headerShown: false}} />
       </Tab.Navigator>
     );
   }

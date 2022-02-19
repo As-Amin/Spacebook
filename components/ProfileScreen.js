@@ -177,6 +177,10 @@ class ProfileScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Profile</Text>
+          <TouchableOpacity style={styles.button}
+            onPress={() => console.log('worked')}>
+            <Text style={styles.buttonText}>Post on your profile</Text>
+          </TouchableOpacity>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item, index}) => (
@@ -201,15 +205,21 @@ class ProfileScreen extends Component {
                     <Text style={styles.buttonText}>View</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => this.deletePost(item.post_id)}>
-                    <Text style={styles.buttonText}>Delete</Text>
-                  </TouchableOpacity>
+                  {item.author.user_id.toString() !== 
+                    this.state.userId.toString() ?  
+                    <></> : 
+                    <TouchableOpacity style={styles.button}
+                      onPress={() => this.deletePost(item.post_id)}>
+                      <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity> }
 
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>Update</Text>
-                  </TouchableOpacity>
+                  {item.author.user_id.toString() !== 
+                    this.state.userId.toString() ?  
+                    <></> : 
+                    <TouchableOpacity style={styles.button}
+                      onPress={() => console.log('worked')}>
+                      <Text style={styles.buttonText}>Update</Text>
+                    </TouchableOpacity> }
                   
                   {item.author.user_id.toString() === 
                     this.state.userId.toString() ?  
@@ -238,7 +248,7 @@ class ProfileScreen extends Component {
  * Add button that for each post that when clicked on,
  * views in a new stack screen
  *
- * Functionality to update and delete posts
+ * Functionality to update posts
  *
  * Functionality to like, dislike buttons
  */
@@ -285,7 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lighterBackground,
   },
   button: {
-    padding: 5,
+    padding: 7.5,
     margin: 5,
     fontSize: 16,
     borderRadius: 10,

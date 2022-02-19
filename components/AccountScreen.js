@@ -1,8 +1,7 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable react/jsx-no-undef */
-import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, View, Text, ScrollView, TouchableOpacity}
-  from 'react-native';
+import {StyleSheet, View, Text, FlatList,
+  TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
@@ -13,7 +12,7 @@ class AccountScreen extends Component {
 
     // State object to store all data
     this.state = {
-      isLoading: true,
+      isLoading: false,
       listData: [],
     };
   }
@@ -68,40 +67,64 @@ class AccountScreen extends Component {
   };
 
   render() {
-    return (
-      <View style={styles.flexContainer}>
-        <ScrollView style={styles.scrollView}>
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.flexContainer}>
+          <Text style={styles.title}>Account</Text>
+          <Text style={styles.text}>
+            Loading account settings...
+          </Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.flexContainer}>
+          <Text style={styles.title}>Account</Text>
           <TouchableOpacity style={styles.button}
             onPress={() => this.logOut() &&
-            this.props.navigation.navigate('Login')}>
-            <Text style={styles.text}>Log Out</Text>
+              this.props.navigation.navigate('Login')}>
+            <Text style={styles.boldText}>Log Out</Text>
           </TouchableOpacity>
-        </ScrollView>
-      </View>
-    );
+        </View>
+      );
+    }
   }
 }
 
 const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'stretch',
   },
-  scrollView: {
+  flatList: {
     paddingLeft: 5,
     paddingRight: 5,
   },
-  textInput: {
-    padding: 5,
-    margin: 5,
-    borderRadius: 10,
-    borderWidth: 1,
+  text: {
+    fontSize: 16,
+    color: Colors.text,
+  },
+  boldText: {
     fontSize: 16,
     fontWeight: 'bold',
-    backgroundColor: Colors.lighterBackground,
     color: Colors.text,
+  },
+  title: {
+    padding: 5,
+    margin: 5,
+    marginTop: 10,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    fontSize: '300%',
+    color: Colors.text,
+  },
+  postBackground: {
+    margin: 5,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.lighterBackground,
   },
   button: {
     padding: 7.5,
@@ -112,18 +135,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.theme,
     color: Colors.text,
   },
-  text: {
-    fontWeight: 'bold',
+  buttonText: {
     fontSize: 16,
-    color: Colors.text,
-  },
-  title: {
-    padding: 5,
-    margin: 5,
-    marginTop: 10,
-    marginBottom: 10,
     fontWeight: 'bold',
-    fontSize: '300%',
     color: Colors.text,
   },
 });

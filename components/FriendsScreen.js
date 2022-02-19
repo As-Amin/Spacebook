@@ -110,6 +110,11 @@ class FriendsScreen extends Component {
                   onPress={() => console.log('worked')}>
                   <Text style={styles.buttonText}>View all posts</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button}
+                  onPress={() => console.log('worked')}>
+                  <Text style={styles.buttonText}>Post on page</Text>
+                </TouchableOpacity>
               </View>
             )}
             keyExtractor={(item, index) => item.user_id.toString()}
