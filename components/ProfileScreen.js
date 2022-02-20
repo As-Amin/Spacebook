@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 // import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList, 
-  TouchableOpacity} from 'react-native';
+  TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
@@ -21,9 +21,10 @@ class ProfileScreen extends Component {
 
     // State object to store all data
     this.state = {
-      userId: '',
+      nonAsyncUserId: '',
       isLoading: true,
       listData: [],
+      userTextToPost: '',
     };
   }
 
@@ -45,14 +46,56 @@ class ProfileScreen extends Component {
   }
 
   /**
+  * Function which posts on the users individual profile
+  * @return {state} The states loading config and list data
+  */
+  postOnProfile = async (textToPost) => {
+    // Store the user id as a constant - retrieved from async storage
+    const user = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post', {
+      method: 'POST',  
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: textToPost,
+      }),
+    })
+        .then((response) => {
+          if (response.status === 201) {
+            this.componentDidMount();
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else if (response.status === 404) {
+            throw new Error('Post not found!');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(() => {
+          // Reset user text so user can post again
+          this.setState({
+            userTextToPost: '',
+          });
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
+  /**
   * Function loading users posts into the the DOM tree from server.
   * @return {state} The states loading config and list data
   */
   getPosts = async () => {
     // Store the user id as a constant - retrieved from async storage
     const user = await AsyncStorage.getItem('@user_id');
-    this.setState({userId: user});
     const token = await AsyncStorage.getItem('@session_token');
+
     return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post', {
       method: 'GET',  
       headers: {
@@ -74,6 +117,7 @@ class ProfileScreen extends Component {
           this.setState({
             isLoading: false,
             listData: responseJson,
+            nonAsyncUserId: user,
           });
         })
         .catch((error) =>{
@@ -85,7 +129,6 @@ class ProfileScreen extends Component {
   * Function which sends a POST request to like a post
   * into the the DOM tree from server.
   * @param {int} postId The identifier for the post to like
-  * @param {int} postUserId The user id that posted the post
   * @return {state} The states loading config and list data
   */
   likePost = async (postId) => {
@@ -101,6 +144,7 @@ class ProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
+            this.componentDidMount();
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
@@ -115,6 +159,40 @@ class ProfileScreen extends Component {
         });
   };
 
+  /**
+  * Function which sends a DELETE request to dislike a post
+  * into the the DOM tree from server.
+  * @param {int} postId The identifier for the post to like
+  * @return {state} The states loading config and list data
+  */
+  dislikePost = async (postId) => {
+    // Store the user id as a constant - retrieved from async storage
+    const user = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString() + '/like', {
+      method: 'DELETE', // DELETE request as sending request to dislike post
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            this.componentDidMount();
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else if (response.status === 403) {
+            throw new Error('You have not liked this post!');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+  
   /**
   * Function which sends a DELETE request to delete a post
   * into the the DOM tree from server.
@@ -134,6 +212,7 @@ class ProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
+            this.componentDidMount();
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
@@ -177,8 +256,13 @@ class ProfileScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Profile</Text>
+          <TextInput style={styles.textInput}
+            placeholder="New post here..."
+            onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+            value={this.state.userTextToPost}
+          />
           <TouchableOpacity style={styles.button}
-            onPress={() => console.log('worked')}>
+            onPress={() => this.postOnProfile(this.state.userTextToPost)}>
             <Text style={styles.buttonText}>Post on your profile</Text>
           </TouchableOpacity>
           <FlatList style={styles.flatList}
@@ -206,7 +290,7 @@ class ProfileScreen extends Component {
                   </TouchableOpacity>
 
                   {item.author.user_id.toString() !== 
-                    this.state.userId.toString() ?  
+                    this.state.nonAsyncUserId.toString() ?  
                     <></> : 
                     <TouchableOpacity style={styles.button}
                       onPress={() => this.deletePost(item.post_id)}>
@@ -214,7 +298,7 @@ class ProfileScreen extends Component {
                     </TouchableOpacity> }
 
                   {item.author.user_id.toString() !== 
-                    this.state.userId.toString() ?  
+                    this.state.nonAsyncUserId.toString() ?  
                     <></> : 
                     <TouchableOpacity style={styles.button}
                       onPress={() => console.log('worked')}>
@@ -222,13 +306,13 @@ class ProfileScreen extends Component {
                     </TouchableOpacity> }
                   
                   {item.author.user_id.toString() === 
-                    this.state.userId.toString() ?  
+                    this.state.nonAsyncUserId.toString() ?  
                     <></> : 
                     <><TouchableOpacity style={styles.button}
                       onPress={() => this.likePost(item.post_id)}>
                       <Text style={styles.buttonText}>Like</Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() => console.log('worked')}>
+                      onPress={() => this.dislikePost(item.post_id)}>
                       <Text style={styles.buttonText}>Dislike</Text>
                     </TouchableOpacity></> }
                 </View>
@@ -243,14 +327,10 @@ class ProfileScreen extends Component {
 }
 
 /**
- * Add button for adding post to my own profile
- *
  * Add button that for each post that when clicked on,
  * views in a new stack screen
  *
  * Functionality to update posts
- *
- * Functionality to like, dislike buttons
  */
 
 const styles = StyleSheet.create({
@@ -306,6 +386,16 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: Colors.text,
+  },
+  textInput: {
+    padding: 5,
+    margin: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.lighterBackground,
     color: Colors.text,
   },
 });
