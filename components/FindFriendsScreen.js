@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
 
 
-class FriendsScreen extends Component {
+class FindFriendsScreen extends Component {
   /**
   * Constuctor for the Friends Screen component class inheriting properties
   * from the Component class
@@ -29,7 +29,7 @@ class FriendsScreen extends Component {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });
-    this.getFriends();
+    this.getUsers();
   }
 
   /**
@@ -40,14 +40,13 @@ class FriendsScreen extends Component {
   }
 
   /**
-  * Function loading friends into the the DOM tree from server.
+  * Function loading friend requests into the the DOM tree from server.
   * @return {state} The states loading config and list data
   */
-  getFriends = async () => {
+  getUsers = async () => {
     // Store the auth key as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+    return fetch('http://localhost:3333/api/1.0.0/search', {
       method: 'GET',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -85,10 +84,10 @@ class FriendsScreen extends Component {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friends</Text>
+          <Text style={styles.title}>Find friends</Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading friends...
+              Loading friend requests...
             </Text>
           </FlatList>
         </View>
@@ -96,32 +95,26 @@ class FriendsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friends</Text>
+          <Text style={styles.title}>Find friends</Text>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
               <View style={styles.postBackground}>
                 <Text style={styles.boldText}>
-                  {'Friend name: ' + item.user_givenname + ' ' +
+                  {'Username: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
                 </Text>
 
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>View posts</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>New post</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>Information</Text>
+                    <Text style={styles.buttonText}>Send request</Text>
                   </TouchableOpacity>
                 </View>
+                {
+                // Add a if statement for if user is already friends,
+                // dont display there name
+                }
               </View>
             )}
             keyExtractor={(item, index) => item.user_id.toString()}
@@ -189,4 +182,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FriendsScreen;
+export default FindFriendsScreen;

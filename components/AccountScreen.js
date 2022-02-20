@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable react/jsx-no-undef */
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, ScrollView,
+  TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
@@ -12,6 +12,10 @@ class AccountScreen extends Component {
 
     // State object to store all data
     this.state = {
+      first_name: '',
+      last_name: '',
+      email: '',
+      password: '',
       isLoading: false,
       listData: [],
     };
@@ -54,7 +58,6 @@ class AccountScreen extends Component {
         .then((responseJson) => {})
         .catch((error) =>{
           console.log(error);
-          ToastAndroid.show(error, ToastAndroid.SHORT);
         });
   };
 
@@ -80,11 +83,50 @@ class AccountScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Account</Text>
-          <TouchableOpacity style={styles.button}
-            onPress={() => this.logOut() &&
-              this.props.navigation.navigate('Login')}>
-            <Text style={styles.boldText}>Log Out</Text>
-          </TouchableOpacity>
+          <ScrollView style={styles.scrollView}>
+
+            <Text style={styles.boldText}>
+              {'Current first name: ' }{'\n'}{'\n'}
+            </Text>
+            <Text style={styles.boldText}>
+              {'Current last name: ' }{'\n'}{'\n'}
+            </Text>
+            <Text style={styles.boldText}>
+              {'Current email: ' }{'\n'}{'\n'}
+            </Text>
+            <TextInput style={styles.textInput}
+              placeholder="New first name..."
+              // eslint-disable-next-line camelcase
+              onChangeText={(first_name) => this.setState({first_name})}
+              value={this.state.first_name}
+            />
+            <TextInput style={styles.textInput}
+              placeholder="New last name..."
+              // eslint-disable-next-line camelcase
+              onChangeText={(last_name) => this.setState({last_name})}
+              value={this.state.last_name}
+            />
+            <TextInput style={styles.textInput}
+              placeholder="New email..."
+              onChangeText={(email) => this.setState({email})}
+              value={this.state.email}
+            />
+            <TextInput style={styles.textInput}
+              placeholder="New password..."
+              onChangeText={(password) => this.setState({password})}
+              value={this.state.password}
+              secureTextEntry
+            />
+            <TouchableOpacity style={styles.button}
+              onPress={() => console.log('worked')}>
+              <Text style={styles.buttonText}>Update information</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}
+              onPress={() => this.logOut() &&
+                    this.props.navigation.navigate('Login')}>
+              <Text style={styles.buttonText}>Log out</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       );
     }
@@ -97,7 +139,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
   },
-  flatList: {
+  scrollView: {
     paddingLeft: 5,
     paddingRight: 5,
   },
@@ -109,6 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+    paddingLeft: 5,
   },
   title: {
     padding: 5,
@@ -138,6 +181,16 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: Colors.text,
+  },
+  textInput: {
+    padding: 5,
+    margin: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.lighterBackground,
     color: Colors.text,
   },
 });

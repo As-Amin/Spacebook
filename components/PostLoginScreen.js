@@ -5,6 +5,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import ProfileScreen from './ProfileScreen';
 import FriendsScreen from './FriendsScreen';
 import FriendRequestsScreen from './FriendRequestsScreen';
+import FindFriendsScreen from './FindFriendsScreen';
 import AccountScreen from './AccountScreen';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -33,9 +34,14 @@ class TabNavigateScreen extends Component {
                 name={'people-outline'}
                 size={size}
                 color={color} />;
-            } else if (route.name == 'Friend Requests') {
+            } else if (route.name == 'Requests') {
               return <IonIcons
                 name={'person-add-outline'}
+                size={size}
+                color={color} />;
+            } else if (route.name == 'Find') {
+              return <IonIcons
+                name={'search-outline'}
                 size={size}
                 color={color} />;
             } else if (route.name == 'Account') {
@@ -55,8 +61,11 @@ class TabNavigateScreen extends Component {
         <Tab.Screen name='Friends'
           component={FriendsScreen}
           options={{headerShown: false}} />
-        <Tab.Screen name='Friend Requests'
+        <Tab.Screen name='Requests'
           component={FriendRequestsScreen}
+          options={{headerShown: false}} />
+        <Tab.Screen name='Find'
+          component={FindFriendsScreen}
           options={{headerShown: false}} />
         <Tab.Screen name='Account'
           component={AccountScreen}
