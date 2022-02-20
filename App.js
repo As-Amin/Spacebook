@@ -31,7 +31,7 @@ class Spacebook extends Component {
           <Stack.Screen
             name="SignUp"
             component={SignUpScreen}
-            options={{title: 'Back to Login'}}
+            options={{title: 'Back to login'}}
           />
           <Stack.Screen
             name="PostLogin"

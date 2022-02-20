@@ -263,7 +263,7 @@ class ProfileScreen extends Component {
           />
           <TouchableOpacity style={styles.button}
             onPress={() => this.postOnProfile(this.state.userTextToPost)}>
-            <Text style={styles.buttonText}>Post on your profile</Text>
+            <Text style={styles.buttonText}>Post on profile</Text>
           </TouchableOpacity>
           <FlatList style={styles.flatList}
             data={this.state.listData}

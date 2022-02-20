@@ -86,13 +86,13 @@ class AccountScreen extends Component {
           <ScrollView style={styles.scrollView}>
 
             <Text style={styles.boldText}>
-              {'Current first name: ' }{'\n'}{'\n'}
+              {'First name: ' }{'\n'}{'\n'}
             </Text>
             <Text style={styles.boldText}>
-              {'Current last name: ' }{'\n'}{'\n'}
+              {'Last name: ' }{'\n'}{'\n'}
             </Text>
             <Text style={styles.boldText}>
-              {'Current email: ' }{'\n'}{'\n'}
+              {'Email: ' }{'\n'}{'\n'}
             </Text>
             <TextInput style={styles.textInput}
               placeholder="New first name..."

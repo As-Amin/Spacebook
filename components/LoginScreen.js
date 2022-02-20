@@ -89,7 +89,7 @@ class LoginScreen extends Component {
 
           <TouchableOpacity style={styles.button}
             onPress={() => this.props.navigation.navigate('SignUp')}>
-            <Text style={styles.text}>Do not have an account?</Text>
+            <Text style={styles.text}>Don&apos;t have an account?</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
