@@ -108,7 +108,7 @@ class FindFriendsScreen extends Component {
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
-                    <Text style={styles.buttonText}>Send request</Text>
+                    <Text style={styles.buttonText}>Send {item.user_givenname} a friend request</Text>
                   </TouchableOpacity>
                 </View>
                 {
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lighterBackground,
   },
   button: {
+    flex: 1,
     padding: 7.5,
     margin: 5,
     fontSize: 16,

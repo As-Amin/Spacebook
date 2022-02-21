@@ -12,11 +12,11 @@ class AccountScreen extends Component {
 
     // State object to store all data
     this.state = {
-      first_name: '',
-      last_name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
-      isLoading: false,
+      isLoading: true,
       listData: [],
     };
   }
@@ -28,6 +28,7 @@ class AccountScreen extends Component {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });
+    this.getUserInfo();
   }
 
   /**
@@ -36,6 +37,43 @@ class AccountScreen extends Component {
   componentWillUnmount() {
     this.unsubscribe();
   }
+
+  /**
+  * Function loading users information into the the DOM tree from server.
+  * @return {state} The states loading config and list data
+  */
+  getUserInfo = async () => {
+    // Store the user id as a constant - retrieved from async storage
+    const user = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
+      method: 'GET',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else if (response.status === 404) {
+            throw new Error('Cannot find user');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseJson) => {
+          this.setState({
+            isLoading: false,
+            listData: responseJson,
+          });
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
 
   logOut = async () => {
     const token = await AsyncStorage.getItem('@session_token');
@@ -84,27 +122,26 @@ class AccountScreen extends Component {
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Account</Text>
           <ScrollView style={styles.scrollView}>
-
-            <Text style={styles.boldText}>
-              {'First name: ' }{'\n'}{'\n'}
-            </Text>
-            <Text style={styles.boldText}>
-              {'Last name: ' }{'\n'}{'\n'}
-            </Text>
-            <Text style={styles.boldText}>
-              {'Email: ' }{'\n'}{'\n'}
-            </Text>
+            <View style={styles.postBackground}>
+              <Text style={styles.boldText}>
+                {'First name: '}{this.state.listData.first_name}{'\n'}{'\n'}
+              </Text>
+              <Text style={styles.boldText}>
+                {'Last name: '}{this.state.listData.last_name}{'\n'}{'\n'}
+              </Text>
+              <Text style={styles.boldText}>
+                {'Email: '}{this.state.listData.email}{'\n'}
+              </Text>
+            </View>
             <TextInput style={styles.textInput}
               placeholder="New first name..."
-              // eslint-disable-next-line camelcase
-              onChangeText={(first_name) => this.setState({first_name})}
-              value={this.state.first_name}
+              onChangeText={(firstName) => this.setState({firstName})}
+              value={this.state.firstName}
             />
             <TextInput style={styles.textInput}
               placeholder="New last name..."
-              // eslint-disable-next-line camelcase
-              onChangeText={(last_name) => this.setState({last_name})}
-              value={this.state.last_name}
+              onChangeText={(lastName) => this.setState({lastName})}
+              value={this.state.lastName}
             />
             <TextInput style={styles.textInput}
               placeholder="New email..."
@@ -123,7 +160,7 @@ class AccountScreen extends Component {
             </TouchableOpacity>
             <TouchableOpacity style={styles.button}
               onPress={() => this.logOut() &&
-                    this.props.navigation.navigate('Login')}>
+                      this.props.navigation.navigate('Login')}>
               <Text style={styles.buttonText}>Log out</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -151,7 +188,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
-    paddingLeft: 5,
   },
   title: {
     padding: 5,

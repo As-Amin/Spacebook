@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 // import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList, 
-  TouchableOpacity, TextInput} from 'react-native';
+  TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
@@ -87,6 +87,7 @@ class ProfileScreen extends Component {
         });
   };
 
+  
   /**
   * Function loading users posts into the the DOM tree from server.
   * @return {state} The states loading config and list data
@@ -256,39 +257,37 @@ class ProfileScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Profile</Text>
-          <TextInput style={styles.textInput}
-            placeholder="New post here..."
-            onChangeText={(userTextToPost) => this.setState({userTextToPost})}
-            value={this.state.userTextToPost}
-          />
-          <TouchableOpacity style={styles.button}
-            onPress={() => this.postOnProfile(this.state.userTextToPost)}>
-            <Text style={styles.buttonText}>Post on profile</Text>
-          </TouchableOpacity>
+          <View style={styles.postOnProfileView}>
+            <TextInput style={styles.textInput}
+              placeholder="New post here..."
+              onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+              value={this.state.userTextToPost}
+            />
+            <TouchableOpacity style={styles.postOnProfileButton}
+              onPress={() => this.postOnProfile(this.state.userTextToPost)}>
+              <Text style={styles.buttonText}>Post on profile</Text>
+            </TouchableOpacity>
+          </View>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item, index}) => (
-              <View style={styles.postBackground}>
+              <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Post from ' + item.author.first_name + ' ' + 
                   item.author.last_name + ':'} {'\n'}{'\n'}
                 </Text>
-
                 <Text style={styles.text}>
                   {item.text} {'\n'}{'\n'}
                 </Text>
-
                 <Text style={styles.boldText}>
                   {new Date(item.timestamp).toDateString() + 
                   ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
                 </Text>
-
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
                     <Text style={styles.buttonText}>View</Text>
                   </TouchableOpacity>
-
                   {item.author.user_id.toString() !== 
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
@@ -296,7 +295,6 @@ class ProfileScreen extends Component {
                       onPress={() => this.deletePost(item.post_id)}>
                       <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity> }
-
                   {item.author.user_id.toString() !== 
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
@@ -304,7 +302,6 @@ class ProfileScreen extends Component {
                       onPress={() => console.log('worked')}>
                       <Text style={styles.buttonText}>Update</Text>
                     </TouchableOpacity> }
-                  
                   {item.author.user_id.toString() === 
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
@@ -349,6 +346,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  postOnProfileView: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
   text: {
     fontSize: 16,
     color: Colors.text,
@@ -367,14 +368,24 @@ const styles = StyleSheet.create({
     fontSize: '300%',
     color: Colors.text,
   },
-  postBackground: {
+  cardBackground: {
     margin: 5,
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
   },
-  button: {
+  postOnProfileButton: {
+    padding: 7.5,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.theme,
+    color: Colors.text,
+  },
+  button: {  
+    flex: 1,
     padding: 7.5,
     margin: 5,
     fontSize: 16,

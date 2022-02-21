@@ -394,15 +394,17 @@ class GetFriendsPosts extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>{this.props.route.params.friendFirstName}&apos;s posts</Text>
-          <TextInput style={styles.textInput}
-            placeholder="New post here..."
-            onChangeText={(userTextToPost) => this.setState({userTextToPost})}
-            value={this.state.userTextToPost}
-          />
-          <TouchableOpacity style={styles.button}
-            onPress={() => this.postOnProfile(this.state.userTextToPost)}>
-            <Text style={styles.buttonText}>Post on profile</Text>
-          </TouchableOpacity>
+          <View style={styles.postOnProfileView}>
+            <TextInput style={styles.textInput}
+              placeholder="New post here..."
+              onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+              value={this.state.userTextToPost}
+            />
+            <TouchableOpacity style={styles.postOnProfileButton}
+              onPress={() => this.postOnProfile(this.state.userTextToPost)}>
+              <Text style={styles.buttonText}>Post on profile</Text>
+            </TouchableOpacity>
+          </View>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item, index}) => (
@@ -480,6 +482,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  postOnProfileView: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
   text: {
     fontSize: 16,
     color: Colors.text,
@@ -505,7 +511,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
   },
+  postOnProfileButton: {
+    padding: 7.5,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.theme,
+    color: Colors.text,
+  },
   button: {
+    flex: 1,
     padding: 7.5,
     margin: 5,
     fontSize: 16,
