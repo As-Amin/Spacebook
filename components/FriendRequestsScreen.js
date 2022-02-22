@@ -99,18 +99,16 @@ class FriendRequestsScreen extends Component {
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
-              <View style={styles.postBackground}>
+              <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Friend request from: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
                 </Text>
-
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
                     <Text style={styles.buttonText}>Accept request</Text>
                   </TouchableOpacity>
-
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
                     <Text style={styles.buttonText}>Decline request</Text>
@@ -160,7 +158,7 @@ const styles = StyleSheet.create({
     fontSize: '300%',
     color: Colors.text,
   },
-  postBackground: {
+  cardBackground: {
     margin: 5,
     padding: 10,
     borderRadius: 10,
@@ -180,6 +178,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+  },
+  lineSeperator: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.lineBreak,
   },
 });
 

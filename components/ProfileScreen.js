@@ -2,7 +2,7 @@
 /* eslint-disable no-trailing-spaces */
 // import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList, 
-  TouchableOpacity, TextInput, ScrollView} from 'react-native';
+  TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from './constants/colors.js';
@@ -264,6 +264,7 @@ class ProfileScreen extends Component {
               onPress={() => this.postOnProfile(this.state.userTextToPost)}>
               <Text style={styles.buttonText}>Post on profile</Text>
             </TouchableOpacity>
+            <View style={styles.lineSeperator}></View>
           </View>
           <FlatList style={styles.flatList}
             data={this.state.listData}
@@ -288,25 +289,23 @@ class ProfileScreen extends Component {
                   {item.author.user_id.toString() !== 
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
-                    <TouchableOpacity style={styles.button}
+                    <><TouchableOpacity style={styles.button}
                       onPress={() => this.deletePost(item.post_id)}>
                       <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity> }
-                  {item.author.user_id.toString() !== 
-                    this.state.nonAsyncUserId.toString() ?  
-                    <></> : 
-                    <TouchableOpacity style={styles.button}
+                    </TouchableOpacity><TouchableOpacity style={styles.button}
                       onPress={() => console.log('worked')}>
                       <Text style={styles.buttonText}>Update</Text>
-                    </TouchableOpacity> }
+                    </TouchableOpacity></> }
                   {item.author.user_id.toString() === 
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
                     <><TouchableOpacity style={styles.button}
-                      onPress={() => this.likePost(item.author.user_id, item.post_id)}>
+                      onPress={() => 
+                        this.likePost(item.author.user_id, item.post_id)}>
                       <Text style={styles.buttonText}>Like</Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() => this.dislikePost(item.author.user_id, item.post_id)}>
+                      onPress={() => 
+                        this.dislikePost(item.author.user_id, item.post_id)}>
                       <Text style={styles.buttonText}>Dislike</Text>
                     </TouchableOpacity></> }
                 </View>
@@ -405,6 +404,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: Colors.lighterBackground,
     color: Colors.text,
+  },
+  lineSeperator: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.lineBreak,
   },
 });
 export default ProfileScreen;

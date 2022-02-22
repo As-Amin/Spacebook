@@ -100,7 +100,7 @@ class AccountScreen extends Component {
   };
 
   updateUserInfo = async () => {
-    //Validation here
+    // Validation here
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
 
@@ -154,7 +154,7 @@ class AccountScreen extends Component {
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Account</Text>
           <ScrollView style={styles.scrollView}>
-            <View style={styles.postBackground}>
+            <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
                 {'First name: '}{this.state.listData.first_name}{'\n'}{'\n'}
               </Text>
@@ -165,6 +165,7 @@ class AccountScreen extends Component {
                 {'Email: '}{this.state.listData.email}{'\n'}
               </Text>
             </View>
+            <View style={styles.lineSeperator}></View>
             <TextInput style={styles.textInput}
               placeholder="New first name..."
               onChangeText={(firstName) => this.setState({firstName})}
@@ -190,6 +191,7 @@ class AccountScreen extends Component {
               onPress={() => this.updateUserInfo()}>
               <Text style={styles.buttonText}>Update information</Text>
             </TouchableOpacity>
+            <View style={styles.lineSeperator}></View>
             <TouchableOpacity style={styles.button}
               onPress={() => this.logOut() &&
                       this.props.navigation.navigate('Login')}>
@@ -230,7 +232,7 @@ const styles = StyleSheet.create({
     fontSize: '300%',
     color: Colors.text,
   },
-  postBackground: {
+  cardBackground: {
     margin: 5,
     padding: 10,
     borderRadius: 10,
@@ -260,6 +262,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: Colors.lighterBackground,
     color: Colors.text,
+  },
+  lineSeperator: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.lineBreak,
   },
 });
 

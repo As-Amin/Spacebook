@@ -132,7 +132,7 @@ class FriendsScreenMain extends Component {
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
-              <View style={styles.postBackground}>
+              <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Friend name: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
@@ -197,7 +197,6 @@ class GetFriendsPosts extends Component {
   */
   postOnProfile = async (textToPost) => {
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post', {
       method: 'POST',
       headers: {
@@ -238,7 +237,6 @@ class GetFriendsPosts extends Component {
   getPosts = async () => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post', {
       method: 'GET',
       headers: {
@@ -275,10 +273,7 @@ class GetFriendsPosts extends Component {
   * @return {state} The states loading config and list data
   */
   likePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
-    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post/' + postId.toString() + '/like', {
       method: 'POST', // POST request as sending request to like post
       headers: {
@@ -307,10 +302,7 @@ class GetFriendsPosts extends Component {
     * @return {state} The states loading config and list data
     */
   dislikePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
-    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post/' + postId.toString() + '/like', {
       method: 'DELETE', // DELETE request as sending request to remove like from post
       headers: {
@@ -341,10 +333,7 @@ class GetFriendsPosts extends Component {
     * @return {state} The states loading config and list data
     */
   deletePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
-    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post/' + postId.toString(), {
       method: 'DELETE',
       headers: {
@@ -402,47 +391,38 @@ class GetFriendsPosts extends Component {
               onPress={() => this.postOnProfile(this.state.userTextToPost)}>
               <Text style={styles.buttonText}>Post on profile</Text>
             </TouchableOpacity>
+            <View style={styles.lineSeperator}></View>
           </View>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item, index}) => (
-              <View style={styles.postBackground}>
+              <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Post from ' + item.author.first_name + ' ' +
                   item.author.last_name + ':'} {'\n'}{'\n'}
                 </Text>
-
                 <Text style={styles.text}>
                   {item.text} {'\n'}{'\n'}
                 </Text>
-
                 <Text style={styles.boldText}>
                   {new Date(item.timestamp).toDateString() +
                   ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
                 </Text>
-
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => console.log('worked')}>
                     <Text style={styles.buttonText}>View</Text>
                   </TouchableOpacity>
-
                   {item.author.user_id.toString() !==
                     this.state.nonAsyncUserId.toString() ?
                     <></> :
-                    <TouchableOpacity style={styles.button}
+                    <><TouchableOpacity style={styles.button}
                       onPress={() => this.deletePost(item.post_id)}>
                       <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity> }
-
-                  {item.author.user_id.toString() !==
-                    this.state.nonAsyncUserId.toString() ?
-                    <></> :
-                    <TouchableOpacity style={styles.button}
+                    </TouchableOpacity><TouchableOpacity style={styles.button}
                       onPress={() => console.log('worked')}>
                       <Text style={styles.buttonText}>Update</Text>
-                    </TouchableOpacity> }
-
+                    </TouchableOpacity></> }
                   {item.author.user_id.toString() ===
                     this.state.nonAsyncUserId.toString() ?
                     <></> :
@@ -502,7 +482,7 @@ const styles = StyleSheet.create({
     fontSize: '300%',
     color: Colors.text,
   },
-  postBackground: {
+  cardBackground: {
     margin: 5,
     padding: 10,
     borderRadius: 10,
@@ -542,6 +522,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: Colors.lighterBackground,
     color: Colors.text,
+  },
+  lineSeperator: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.lineBreak,
   },
 });
 

@@ -1,6 +1,7 @@
 export const Colors = {
-  text: '#ffffff',
+  text: '#FFFFFF',
   textFaded: '#b2b2b2',
   lighterBackground: '#121212',
-  theme: '#ea9760',
+  lineBreak: '#121212',
+  theme: '#D08770',
 };

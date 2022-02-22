@@ -107,7 +107,7 @@ class FindFriendsScreen extends Component {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Find friends</Text>
+          <Text style={styles.title}>Find Friends</Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
               Loading users...
@@ -118,16 +118,15 @@ class FindFriendsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Find friends</Text>
+          <Text style={styles.title}>Find Friends</Text>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
-              <View style={styles.postBackground}>
+              <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Username: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
                 </Text>
-
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.addFriend(item.user_id)}>
@@ -182,7 +181,7 @@ const styles = StyleSheet.create({
     fontSize: '300%',
     color: Colors.text,
   },
-  postBackground: {
+  cardBackground: {
     margin: 5,
     padding: 10,
     borderRadius: 10,
@@ -203,6 +202,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+  },
+  lineSeperator: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.lineBreak,
   },
 });
 
