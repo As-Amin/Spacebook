@@ -84,7 +84,7 @@ class FriendRequestsScreen extends Component {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friend requests</Text>
+          <Text style={styles.title}>Friend Requests</Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
               Loading friend requests...
@@ -95,7 +95,7 @@ class FriendRequestsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friend requests</Text>
+          <Text style={styles.title}>Friend Requests</Text>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (

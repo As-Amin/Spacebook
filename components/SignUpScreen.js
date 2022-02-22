@@ -17,8 +17,8 @@ class SignUpScreen extends Component {
     super(props);
 
     this.state = {
-      first_name: '',
-      last_name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
     };
@@ -32,15 +32,20 @@ class SignUpScreen extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(this.state),
+      body: JSON.stringify({
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        email: this.state.email,
+        password: this.state.password,
+      }),
     })
         .then((response) => {
           if (response.status === 201) {
             return response.json();
           } else if (response.status === 400) {
-            throw new 'Failed validation';
+            throw new Error('Failed validation');
           } else {
-            throw new 'Something went wrong';
+            throw new Error('Something went wrong');
           }
         })
         .then((responseJson) => {
@@ -61,17 +66,17 @@ class SignUpScreen extends Component {
     return (
       <View style={styles.flexContainer}>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.title}>Sign up</Text>
+          <Text style={styles.title}>Sign Up</Text>
           <TextInput style={styles.textInput}
             placeholder="Enter your first name..."
             // eslint-disable-next-line camelcase
-            onChangeText={(first_name) => this.setState({first_name})}
+            onChangeText={(firstName) => this.setState({firstName})}
             value={this.state.first_name}
           />
           <TextInput style={styles.textInput}
             placeholder="Enter your last name..."
             // eslint-disable-next-line camelcase
-            onChangeText={(last_name) => this.setState({last_name})}
+            onChangeText={(lastName) => this.setState({lastName})}
             value={this.state.last_name}
           />
           <TextInput style={styles.textInput}

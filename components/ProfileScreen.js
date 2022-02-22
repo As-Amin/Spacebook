@@ -82,7 +82,7 @@ class ProfileScreen extends Component {
             userTextToPost: '',
           });
         })
-        .catch((error) =>{
+        .catch((error) => {
           console.log(error);
         });
   };
@@ -121,7 +121,7 @@ class ProfileScreen extends Component {
             nonAsyncUserId: user,
           });
         })
-        .catch((error) =>{
+        .catch((error) => {
           console.log(error);
         });
   };
@@ -132,8 +132,7 @@ class ProfileScreen extends Component {
   * @param {int} postId The identifier for the post to like
   * @return {state} The states loading config and list data
   */
-  likePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
+  likePost = async (userId, postId) => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
     
@@ -155,7 +154,7 @@ class ProfileScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .catch((error) =>{
+        .catch((error) => {
           console.log(error);
         });
   };
@@ -166,8 +165,7 @@ class ProfileScreen extends Component {
   * @param {int} postId The identifier for the post to like
   * @return {state} The states loading config and list data
   */
-  dislikePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
+  dislikePost = async (userId, postId) => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
 
@@ -189,7 +187,7 @@ class ProfileScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .catch((error) =>{
+        .catch((error) => {
           console.log(error);
         });
   };
@@ -201,7 +199,6 @@ class ProfileScreen extends Component {
   * @return {state} The states loading config and list data
   */
   deletePost = async (postId) => {
-    // Store the user id as a constant - retrieved from async storage
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
 
@@ -306,10 +303,10 @@ class ProfileScreen extends Component {
                     this.state.nonAsyncUserId.toString() ?  
                     <></> : 
                     <><TouchableOpacity style={styles.button}
-                      onPress={() => this.likePost(item.post_id)}>
+                      onPress={() => this.likePost(item.author.user_id, item.post_id)}>
                       <Text style={styles.buttonText}>Like</Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() => this.dislikePost(item.post_id)}>
+                      onPress={() => this.dislikePost(item.author.user_id, item.post_id)}>
                       <Text style={styles.buttonText}>Dislike</Text>
                     </TouchableOpacity></> }
                 </View>

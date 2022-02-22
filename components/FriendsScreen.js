@@ -19,7 +19,7 @@ class FriendsScreen extends Component {
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name="Friends"
+          name="FriendsScreenMain"
           component={FriendsScreenMain}
           options={{headerShown: false}}
         />
@@ -279,7 +279,7 @@ class GetFriendsPosts extends Component {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
 
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString() + '/like', {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post/' + postId.toString() + '/like', {
       method: 'POST', // POST request as sending request to like post
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -291,8 +291,6 @@ class GetFriendsPosts extends Component {
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
-          } else if (response.status === 403) {
-            throw new Error('You have already liked this post!');
           } else {
             throw new Error('Something went wrong');
           }
@@ -313,8 +311,8 @@ class GetFriendsPosts extends Component {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
 
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString() + '/like', {
-      method: 'DELETE', // DELETE request as sending request to dislike post
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.friendId.toString() + '/post/' + postId.toString() + '/like', {
+      method: 'DELETE', // DELETE request as sending request to remove like from post
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
       },

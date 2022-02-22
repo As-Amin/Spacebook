@@ -99,6 +99,38 @@ class AccountScreen extends Component {
         });
   };
 
+  updateUserInfo = async () => {
+    //Validation here
+    const user = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
+      method: 'PATCH',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        email: this.state.email,
+        password: this.state.password,
+      }),
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            this.logOut();
+          } else if (response.status === 400) {
+            throw new Error('Failed validation');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  };
+
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -155,7 +187,7 @@ class AccountScreen extends Component {
               secureTextEntry
             />
             <TouchableOpacity style={styles.button}
-              onPress={() => console.log('worked')}>
+              onPress={() => this.updateUserInfo()}>
               <Text style={styles.buttonText}>Update information</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button}
