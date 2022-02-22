@@ -72,6 +72,29 @@ class FindFriendsScreen extends Component {
         });
   };
 
+  addFriend = async (userId) => {
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+      method: 'POST',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            this.componentDidMount();
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -87,7 +110,7 @@ class FindFriendsScreen extends Component {
           <Text style={styles.title}>Find friends</Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading friend requests...
+              Loading users...
             </Text>
           </FlatList>
         </View>
@@ -107,7 +130,7 @@ class FindFriendsScreen extends Component {
 
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.addFriend(item.user_id)}>
                     <Text style={styles.buttonText}>Send {item.user_givenname} a friend request</Text>
                   </TouchableOpacity>
                 </View>
