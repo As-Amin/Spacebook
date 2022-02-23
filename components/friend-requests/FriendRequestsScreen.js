@@ -21,6 +21,7 @@ class FriendRequestsScreen extends Component {
       listData: [],
     };
   }
+
   /**
   * Instantiate network request to load data, call the function to retrieve data
   */
@@ -100,8 +101,8 @@ class FriendRequestsScreen extends Component {
             renderItem={({item}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
-                  {'Friend request from: ' + item.user_givenname + ' ' +
-                  item.user_familyname} {'\n'}{'\n'}
+                  {'Friend request from: ' + item.first_name + ' ' +
+                  item.last_name} {'\n'}{'\n'}
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
@@ -128,7 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    justifyContent: 'space-between',
   },
   flexContainerButtons: {
     flex: 1,
@@ -136,6 +136,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   flatList: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
+  postOnProfileView: {
     paddingLeft: 5,
     paddingRight: 5,
   },
@@ -164,7 +168,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
   },
+  postOnProfileButton: {
+    padding: 7.5,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.theme,
+    color: Colors.text,
+  },
   button: {
+    flex: 1,
     padding: 7.5,
     margin: 5,
     fontSize: 16,
@@ -178,6 +192,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
   },
+  textInput: {
+    padding: 5,
+    margin: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.lighterBackground,
+    color: Colors.text,
+  },
   lineSeperator: {
     margin: 5,
     padding: 1,
@@ -185,5 +209,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
 });
+
 
 export default FriendRequestsScreen;
