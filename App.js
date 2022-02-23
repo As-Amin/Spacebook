@@ -6,9 +6,20 @@ import PostLoginScreen from './components/PostLoginScreen';
 
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {Colors} from './constants/colors.js';
 import 'react-native-gesture-handler';
 
 const Stack = createStackNavigator();
+const MyTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: Colors.darkerBackground,
+    card: Colors.lighterBackground,
+    theme: Colors.theme,
+    text: Colors.text,
+  },
+};
 
 /**
  * Main App.js constructor to connect components together.
@@ -21,7 +32,7 @@ class Spacebook extends Component {
  */
   render() {
     return (
-      <NavigationContainer theme = {DarkTheme}>
+      <NavigationContainer theme = {MyTheme}>
         <Stack.Navigator>
           <Stack.Screen
             name='Login'

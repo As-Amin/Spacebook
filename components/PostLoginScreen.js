@@ -2,14 +2,14 @@
 import React, {Component} from 'react';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
-import ProfileScreenNavigator from './ProfileScreens/ProfileScreenNavigator';
-import FriendsScreenNavigator from './FriendsScreens/FriendsScreenNavigator';
-import FriendRequestsScreen from './FriendRequestsScreens/FriendRequestsScreen';
-import FindFriendsScreen from './FindFriendsScreens/FindFriendsScreen';
-import AccountScreen from './AccountScreens/AccountScreen';
+import ProfileScreenNavigator from './profile/ProfileScreenNavigator';
+import FriendsScreenNavigator from './friends/FriendsScreenNavigator';
+import FriendRequestsScreen from './friend-requests/FriendRequestsScreen';
+import FindFriendsScreen from './find-friends/FindFriendsScreen';
+import AccountScreen from './account/AccountScreen';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Colors} from './constants/colors.js';
+import {Colors} from '../constants/colors.js';
 
 const Tab = createBottomTabNavigator();
 

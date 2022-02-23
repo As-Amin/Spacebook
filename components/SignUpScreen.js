@@ -1,8 +1,7 @@
 import {StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity}
   from 'react-native';
 import React, {Component} from 'react';
-import {Colors} from './constants/colors.js';
-
+import {Colors} from '../constants/colors.js';
 /**
  * Logic Screen class prompting users to create an account or sign in.
  * @return {render} Renders the sign up screen.
@@ -66,7 +65,7 @@ class SignUpScreen extends Component {
     return (
       <View style={styles.flexContainer}>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>Sign up</Text>
           <TextInput style={styles.textInput}
             placeholder="Enter your first name..."
             // eslint-disable-next-line camelcase

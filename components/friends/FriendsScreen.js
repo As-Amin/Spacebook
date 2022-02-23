@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, FlatList,
   TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from '../../components/constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 
 class FriendsScreen extends Component {
   /**
@@ -75,7 +75,7 @@ class FriendsScreen extends Component {
 
   findUser = async (userToFind) => {
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search?q=' + userToFind.toString() + '&limit=20', {
+    return fetch('http://localhost:3333/api/1.0.0/search?q=' + userToFind.toString() + '&limit=20&search_in=friends', {
       method: 'GET',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account

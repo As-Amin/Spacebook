@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, FlatList,
   TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from '../constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 
 class ViewProfileScreen extends Component {
   /**
@@ -294,7 +294,9 @@ class ViewProfileScreen extends Component {
                   <TouchableOpacity style={styles.button}
                     onPress={() =>
                       this.props.navigation.navigate('ViewSinglePost', {
+                        userId: this.state.userId,
                         postId: item.post_id,
+                        postAuthorFirstName: item.author.first_name,
                       })}>
                     <Text style={styles.buttonText}>View</Text>
                   </TouchableOpacity>

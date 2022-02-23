@@ -4,14 +4,14 @@ import {StyleSheet, View, Text, FlatList,
   TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from '../../components/constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 import 'react-native-gesture-handler';
 
 class ViewSinglePost extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nonAsyncUserId: '',
+      loggedInAccountUserId: '',
       isLoading: true,
       listData: [],
     };
@@ -37,7 +37,7 @@ class ViewSinglePost extends Component {
   getSinglePost = async () => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + this.props.route.params.postId, {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
       method: 'GET',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -58,7 +58,7 @@ class ViewSinglePost extends Component {
           this.setState({
             isLoading: false,
             listData: responseJson,
-            nonAsyncUserId: user,
+            loggedInAccountUserId: user,
           });
         })
         .catch((error) => {
@@ -89,73 +89,66 @@ class ViewSinglePost extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>View post</Text>
-          <FlatList style={styles.flatList}
-            data={this.state.listData}
-            renderItem={({item, index}) => (
-              <View style={styles.cardBackground}>
-                <Text style={styles.boldText}>
-                  {'Post from ' + item.author.first_name + ' ' +
-                  item.author.last_name + ':'} {'\n'}{'\n'}
-                </Text>
-                <Text style={styles.text}>
-                  {item.text} {'\n'}{'\n'}
-                </Text>
-                <Text style={styles.boldText}>
-                  {new Date(item.timestamp).toDateString() +
-                  ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
-                </Text>
-                <View style={styles.flexContainerButtons}>
-                  {item.author.user_id.toString() !==
-                    this.state.nonAsyncUserId.toString() ?
-                    <></> :
-                    <><TouchableOpacity style={styles.button}
-                      onPress={() => this.deletePost(item.post_id)}>
-                      <Text style={styles.buttonText}>Delete</Text>
-                    </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() => console.log('worked')}>
-                      <Text style={styles.buttonText}>Update</Text>
-                    </TouchableOpacity></> }
-                  {item.author.user_id.toString() ===
-                    this.state.nonAsyncUserId.toString() ?
-                    <></> :
-                    <><TouchableOpacity style={styles.button}
-                      onPress={() =>
-                        this.likePost(item.author.user_id, item.post_id)}>
-                      <Text style={styles.buttonText}>Like</Text>
-                    </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() =>
-                        this.dislikePost(item.author.user_id, item.post_id)}>
-                      <Text style={styles.buttonText}>Dislike</Text>
-                    </TouchableOpacity></> }
-                </View>
+          <Text style={styles.title}>
+            {this.props.route.params.postAuthorFirstName}{'\'s post'}</Text>
+          <View style={styles.listPost}>
+            <View style={styles.cardBackground}>
+              <Text style={styles.boldText}>
+                {'Post from ' + this.state.listData.author.first_name + ' ' +
+                  this.state.listData.author.last_name + ':'} {'\n'}{'\n'}
+              </Text>
+              <Text style={styles.text}>
+                {this.state.listData.text} {'\n'}{'\n'}
+              </Text>
+              <Text style={styles.boldText}>
+                {new Date(this.state.listData.timestamp).toDateString() +
+                  ' | Likes: ' + this.state.listData.numLikes} {'\n'}{'\n'}
+              </Text>
+
+              <View style={styles.flexContainerButtons}>
+                {this.state.listData.author.user_id.toString() !==
+                this.state.loggedInAccountUserId.toString() ?
+                <></> :
+                <><TouchableOpacity style={styles.button}
+                  onPress={() => this.deletePost(this.state.listData.post_id)}>
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity><TouchableOpacity style={styles.button}
+                  onPress={() => console.log('worked')}>
+                  <Text style={styles.buttonText}>Update</Text>
+                </TouchableOpacity></> }
+                {this.state.listData.author.user_id.toString() ===
+                  this.state.loggedInAccountUserId ?
+                  <></> :
+                  <><TouchableOpacity style={styles.button}
+                    onPress={() =>
+                      this.likePost(this.state.listData.post_id)}>
+                    <Text style={styles.buttonText}>Like</Text>
+                  </TouchableOpacity><TouchableOpacity style={styles.button}
+                    onPress={() =>
+                      this.dislikePost(this.state.listData.post_id)}>
+                    <Text style={styles.buttonText}>Dislike</Text>
+                  </TouchableOpacity></> }
               </View>
-            )}
-            keyExtractor={(item, index) => item.post_id.toString()}
-          />
+            </View>
+          </View>
         </View>
       );
     }
   }
 }
 
-/**
- * Functionality to update posts, view them
- */
-
 const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    justifyContent: 'space-between',
   },
   flexContainerButtons: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  flatList: {
+  listPost: {
     paddingLeft: 5,
     paddingRight: 5,
   },

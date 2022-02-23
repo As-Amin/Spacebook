@@ -5,8 +5,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 
 import FriendsScreen from './FriendsScreen';
-import GetFriendsPosts from '../../components/ProfileAndFriendsScreens/ViewProfileScreen';
-import ViewSinglePost from '../../components/ProfileAndFriendsScreens/ViewSinglePost';
+import GetFriendsPosts from '../profile-and-friends/ViewProfileScreen';
+import ViewSinglePost from '../profile-and-friends/ViewSinglePost';
 
 const Stack = createStackNavigator();
 
