@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, ScrollView,
   TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from './constants/colors.js';
+import {Colors} from '../../components/constants/colors.js';
 
 class AccountScreen extends Component {
   constructor(props) {

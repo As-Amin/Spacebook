@@ -2,11 +2,11 @@
 import React, {Component} from 'react';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
-import ProfileScreen from './ProfileScreen';
-import FriendsScreen from './FriendsScreen';
-import FriendRequestsScreen from './FriendRequestsScreen';
-import FindFriendsScreen from './FindFriendsScreen';
-import AccountScreen from './AccountScreen';
+import ProfileScreenNavigator from './ProfileScreens/ProfileScreenNavigator';
+import FriendsScreenNavigator from './FriendsScreens/FriendsScreenNavigator';
+import FriendRequestsScreen from './FriendRequestsScreens/FriendRequestsScreen';
+import FindFriendsScreen from './FindFriendsScreens/FindFriendsScreen';
+import AccountScreen from './AccountScreens/AccountScreen';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Colors} from './constants/colors.js';
@@ -56,10 +56,10 @@ class TabNavigateScreen extends Component {
           })}>
 
         <Tab.Screen name='Profile'
-          component={ProfileScreen}
+          component={ProfileScreenNavigator}
           options={{headerShown: false}}/>
         <Tab.Screen name='Friends'
-          component={FriendsScreen}
+          component={FriendsScreenNavigator}
           options={{headerShown: false}} />
         <Tab.Screen name='Requests'
           component={FriendRequestsScreen}

@@ -1,11 +1,10 @@
 /* eslint-disable require-jsdoc */
 /* eslint-disable max-len */
 import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity} from 'react-native';
+  TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from './constants/colors.js';
-
+import {Colors} from '../../components/constants/colors.js';
 
 class FindFriendsScreen extends Component {
   /**
@@ -20,6 +19,7 @@ class FindFriendsScreen extends Component {
     this.state = {
       isLoading: true,
       listData: [],
+      userToFind: '',
     };
   }
   /**
@@ -72,6 +72,34 @@ class FindFriendsScreen extends Component {
         });
   };
 
+  findUser = async (userToFind) => {
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/search?q=' + userToFind.toString() + '&limit=20', {
+      method: 'GET',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseJson) => {
+          this.setState({
+            listData: responseJson,
+            userToFind: '', // Reset user to find so can search new users
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  };
+
   addFriend = async (userId) => {
     const token = await AsyncStorage.getItem('@session_token');
     return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
@@ -119,6 +147,24 @@ class FindFriendsScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>Find Friends</Text>
+          <View style={styles.searchUserView}>
+            <TextInput style={styles.textInput}
+              placeholder="Enter name here..."
+              onChangeText={(userToFind) => this.setState({userToFind})}
+              value={this.state.userToFind}
+            />
+            <View style={styles.flexContainerButtons}>
+              <TouchableOpacity style={styles.button}
+                onPress={() => this.findUser(this.state.userToFind)}>
+                <Text style={styles.buttonText}>Search</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button}
+                onPress={() => this.getUsers()}>
+                <Text style={styles.buttonText}>Reset</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.lineSeperator}></View>
+          </View>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
@@ -163,6 +209,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
+  searchUserView: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
   text: {
     fontSize: 16,
     color: Colors.text,
@@ -201,6 +251,16 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: Colors.text,
+  },
+  textInput: {
+    padding: 5,
+    margin: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.lighterBackground,
     color: Colors.text,
   },
   lineSeperator: {

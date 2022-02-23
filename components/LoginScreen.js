@@ -68,25 +68,21 @@ class LoginScreen extends Component {
             <IonIcons style={styles.logo}
               name={'planet-outline'}
             /> Spacebook</Text>
-
           <TextInput style={styles.textInput}
             placeholder="Enter your email..."
             onChangeText={(email) => this.setState({email})}
             value={this.state.email}
           />
-
           <TextInput style={styles.textInput}
             placeholder="Enter your password..."
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             secureTextEntry
           />
-
           <TouchableOpacity style={styles.button}
             onPress={() => this.login()}>
             <Text style={styles.text}>Login</Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.button}
             onPress={() => this.props.navigation.navigate('SignUp')}>
             <Text style={styles.text}>Don&apos;t have an account?</Text>

@@ -24,17 +24,17 @@ class Spacebook extends Component {
       <NavigationContainer theme = {DarkTheme}>
         <Stack.Navigator>
           <Stack.Screen
-            name="Login"
+            name='Login'
             component={LoginScreen}
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="SignUp"
+            name='SignUp'
             component={SignUpScreen}
             options={{title: 'Back to login'}}
           />
           <Stack.Screen
-            name="PostLogin"
+            name='PostLogin'
             component={PostLoginScreen}
             options={{headerShown: false}}
           />
