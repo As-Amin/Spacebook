@@ -65,7 +65,7 @@ class ViewSinglePost extends Component {
           console.log(error);
         });
   };
-
+  
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -102,33 +102,8 @@ class ViewSinglePost extends Component {
               </Text>
               <Text style={styles.boldText}>
                 {new Date(this.state.listData.timestamp).toDateString() +
-                  ' | Likes: ' + this.state.listData.numLikes} {'\n'}{'\n'}
+                  ' | Likes: ' + this.state.listData.numLikes} {'\n'}
               </Text>
-
-              <View style={styles.flexContainerButtons}>
-                {this.state.listData.author.user_id.toString() !==
-                this.state.loggedInAccountUserId.toString() ?
-                <></> :
-                <><TouchableOpacity style={styles.button}
-                  onPress={() => this.deletePost(this.state.listData.post_id)}>
-                  <Text style={styles.buttonText}>Delete</Text>
-                </TouchableOpacity><TouchableOpacity style={styles.button}
-                  onPress={() => console.log('worked')}>
-                  <Text style={styles.buttonText}>Update</Text>
-                </TouchableOpacity></> }
-                {this.state.listData.author.user_id.toString() ===
-                  this.state.loggedInAccountUserId ?
-                  <></> :
-                  <><TouchableOpacity style={styles.button}
-                    onPress={() =>
-                      this.likePost(this.state.listData.post_id)}>
-                    <Text style={styles.buttonText}>Like</Text>
-                  </TouchableOpacity><TouchableOpacity style={styles.button}
-                    onPress={() =>
-                      this.dislikePost(this.state.listData.post_id)}>
-                    <Text style={styles.buttonText}>Dislike</Text>
-                  </TouchableOpacity></> }
-              </View>
             </View>
           </View>
         </View>

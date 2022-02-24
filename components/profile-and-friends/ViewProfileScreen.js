@@ -263,11 +263,15 @@ class ViewProfileScreen extends Component {
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
                 onPress={() => this.postOnProfile()}>
-                <Text style={styles.buttonText}>Post on profile</Text>
+                <Text style={styles.buttonText}>Post</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
                 onPress={() => console.log('worked')}>
                 <Text style={styles.buttonText}>Save as draft</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button}
+                onPress={() => this.componentDidMount()}>
+                <Text style={styles.buttonText}>Refresh</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
@@ -308,6 +312,7 @@ class ViewProfileScreen extends Component {
                         this.props.navigation.navigate('UpdatePostScreen', {
                           userId: this.state.userId,
                           postId: item.post_id,
+                          friendFirstName: this.state.friendFirstName,
                         })}>
                       <Text style={styles.buttonText}>Update</Text>
                     </TouchableOpacity></> }

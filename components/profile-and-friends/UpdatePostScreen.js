@@ -68,9 +68,8 @@ class UpdatePostScreen extends Component {
   };
 
   updatePost = async () => {
-    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + this.props.route.params.postId, {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
       method: 'PATCH',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -82,7 +81,14 @@ class UpdatePostScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.props.navigation.navigate('ProfileScreen');
+            //If the friends first name is passed in, go to the friends screen,
+            //or if the first first name hasn't changed from 'profile' go back
+            //to profile screen
+            if (this.props.route.params.friendFirstName === 'Profile') {
+              this.props.navigation.navigate('ProfileScreen');
+            } else {
+              this.props.navigation.navigate('FriendsScreen');
+            }
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
