@@ -20,12 +20,28 @@ class SignUpScreen extends Component {
       lastName: '',
       email: '',
       password: '',
+      errorMessageEmail: '',
+      errorMessagePassword: '',
     };
   }
 
   signup = () => {
-    // Validation here
-
+    this.setState({
+      errorMessageEmail: '',
+      errorMessagePassword: '',
+    });
+    if (!this.state.email.toString().toLowerCase().match(/^\S+@\S+\.\S+$/)) {
+      this.setState({
+        errorMessageEmail: 'Your email address is not valid!',
+      });
+      this.render();
+    }  
+    if (this.state.password.toString().length < 5) {
+      this.setState({
+        errorMessagePassword: 'Your password must be longer than 5 characters!',
+      });
+      this.render();
+    }
     return fetch('http://localhost:3333/api/1.0.0/user', {
       method: 'POST',
       headers: {
@@ -69,13 +85,11 @@ class SignUpScreen extends Component {
           <Text style={styles.title}>Sign up</Text>
           <TextInput style={styles.textInput}
             placeholder="Enter your first name..."
-            // eslint-disable-next-line camelcase
             onChangeText={(firstName) => this.setState({firstName})}
             value={this.state.first_name}
           />
           <TextInput style={styles.textInput}
             placeholder="Enter your last name..."
-            // eslint-disable-next-line camelcase
             onChangeText={(lastName) => this.setState({lastName})}
             value={this.state.last_name}
           />
@@ -90,6 +104,8 @@ class SignUpScreen extends Component {
             value={this.state.password}
             secureTextEntry
           />
+          <Text style={styles.textError}>{this.state.errorMessageEmail}</Text>
+          <Text style={styles.textError}>{this.state.errorMessagePassword}</Text>
           <TouchableOpacity style={styles.button}
             onPress={() => this.signup()}>
             <Text style={styles.text}>Create account</Text>
@@ -135,6 +151,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     color: Colors.text,
+  },
+  textError: {
+    paddingLeft: 5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Colors.error,
   },
   title: {
     padding: 5,
