@@ -112,7 +112,7 @@ class ViewProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 201) {
-            this.componentDidMount();
+            this.getPosts();
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
@@ -149,7 +149,7 @@ class ViewProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
+            this.getPosts();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
@@ -179,7 +179,7 @@ class ViewProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
+            this.getPosts();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
@@ -211,7 +211,7 @@ class ViewProfileScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
+            this.getPosts();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {

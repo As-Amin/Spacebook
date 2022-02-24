@@ -82,6 +82,7 @@ class FindFriendsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
+            this.getUsers();
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
@@ -110,8 +111,7 @@ class FindFriendsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
-            return response.json();
+            this.getUsers();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else {

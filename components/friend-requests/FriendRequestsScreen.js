@@ -83,7 +83,7 @@ class FriendRequestsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
+            this.getFriendRequests();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else {
@@ -106,7 +106,7 @@ class FriendRequestsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
+            this.getFriendRequests();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else {
