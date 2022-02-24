@@ -98,7 +98,7 @@ class ViewProfileScreen extends Component {
   * Function which posts on the users individual profile
   * @return {state} The states loading config and list data
   */
-  postOnProfile = async (textToPost) => {
+  postOnProfile = async () => {
     const token = await AsyncStorage.getItem('@session_token');
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
       method: 'POST',
@@ -107,7 +107,7 @@ class ViewProfileScreen extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: textToPost,
+        text: this.state.userTextToPost,
       }),
     })
         .then((response) => {
@@ -150,7 +150,6 @@ class ViewProfileScreen extends Component {
         .then((response) => {
           if (response.status === 200) {
             this.componentDidMount();
-            return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
@@ -181,7 +180,6 @@ class ViewProfileScreen extends Component {
         .then((response) => {
           if (response.status === 200) {
             this.componentDidMount();
-            return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
@@ -214,7 +212,6 @@ class ViewProfileScreen extends Component {
         .then((response) => {
           if (response.status === 200) {
             this.componentDidMount();
-            return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
           } else if (response.status === 403) {
@@ -265,7 +262,7 @@ class ViewProfileScreen extends Component {
             />
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.postOnProfile(this.state.userTextToPost)}>
+                onPress={() => this.postOnProfile()}>
                 <Text style={styles.buttonText}>Post on profile</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
@@ -307,7 +304,11 @@ class ViewProfileScreen extends Component {
                       onPress={() => this.deletePost(item.post_id)}>
                       <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
-                      onPress={() => console.log('worked')}>
+                      onPress={() =>
+                        this.props.navigation.navigate('UpdatePostScreen', {
+                          userId: this.state.userId,
+                          postId: item.post_id,
+                        })}>
                       <Text style={styles.buttonText}>Update</Text>
                     </TouchableOpacity></> }
                   {item.author.user_id.toString() ===

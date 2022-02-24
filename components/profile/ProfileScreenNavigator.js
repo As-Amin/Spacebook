@@ -8,6 +8,8 @@ import ProfileScreen from
   '../profile-and-friends/ViewProfileScreen';
 import ViewSinglePost from
   '../profile-and-friends/ViewSinglePost';
+import UpdatePostScreen from
+  '../profile-and-friends/UpdatePostScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,11 @@ class ProfileScreenNavigator extends Component {
         <Stack.Screen
           name='ViewSinglePost'
           component={ViewSinglePost}
+          options={{title: 'Back to profile'}}
+        />
+        <Stack.Screen
+          name='UpdatePostScreen'
+          component={UpdatePostScreen}
           options={{title: 'Back to profile'}}
         />
       </Stack.Navigator>

@@ -1,27 +1,23 @@
 /* eslint-disable require-jsdoc */
-/* eslint-disable max-len */
+// import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList,
   TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import 'react-native-gesture-handler';
 
-class FindFriendsScreen extends Component {
-  /**
-  * Constuctor for the Friends Screen component class inheriting properties
-  * from the Component class
-  * @param {Component} props Inherited properties for the components.
-  */
+class UpdatePostScreen extends Component {
   constructor(props) {
     super(props);
-
-    // State object to store all data
     this.state = {
+      loggedInAccountUserId: '',
       isLoading: true,
       listData: [],
-      userToFind: '',
+      userTextToPost: '',
     };
   }
+
   /**
   * Instantiate network request to load data, call the function to retrieve data
   */
@@ -29,7 +25,7 @@ class FindFriendsScreen extends Component {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });
-    this.getUsers();
+    this.getSinglePost();
   }
 
   /**
@@ -39,14 +35,10 @@ class FindFriendsScreen extends Component {
     this.unsubscribe();
   }
 
-  /**
-  * Function loading friend requests into the the DOM tree from server.
-  * @return {state} The states loading config and list data
-  */
-  getUsers = async () => {
-    // Store the auth key as a constant - retrieved from async storage
+  getSinglePost = async () => {
+    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search', {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
       method: 'GET',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -57,6 +49,8 @@ class FindFriendsScreen extends Component {
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
+          } else if (response.status === 403) {
+            throw new Error('Can only view posts of yourself or friends');
           } else {
             throw new Error('Something went wrong');
           }
@@ -65,34 +59,7 @@ class FindFriendsScreen extends Component {
           this.setState({
             isLoading: false,
             listData: responseJson,
-          });
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
-  };
-
-  findUser = async () => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            listData: responseJson,
-            userToFind: '', // Reset user to find so can search new users
+            loggedInAccountUserId: user,
           });
         })
         .catch((error) => {
@@ -100,25 +67,36 @@ class FindFriendsScreen extends Component {
         });
   };
 
-  addFriend = async (userId) => {
+  updatePost = async () => {
+    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
-      method: 'POST',
+    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + this.props.route.params.postId, {
+      method: 'PATCH',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        text: this.state.userTextToPost,
+      }),
     })
         .then((response) => {
           if (response.status === 200) {
-            this.componentDidMount();
-            return response.json();
+            this.props.navigation.navigate('ProfileScreen');
           } else if (response.status === 401) {
             this.props.navigation.navigate('Login');
+          } else if (response.status === 403) {
+            throw new Error('You can only update your own posts');
           } else {
             throw new Error('Something went wrong');
           }
         })
-        .catch((error) =>{
+        .then(() => {
+          this.setState({
+            userTextToPost: '',
+          });
+        })
+        .catch((error) => {
           console.log(error);
         });
   };
@@ -135,10 +113,10 @@ class FindFriendsScreen extends Component {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Find friends</Text>
+          <Text style={styles.title}>Update post</Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading users...
+              Loading post...
             </Text>
           </FlatList>
         </View>
@@ -146,47 +124,30 @@ class FindFriendsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Find friends</Text>
-          <View style={styles.searchUserView}>
-            <TextInput style={styles.textInput}
-              placeholder="Enter name here..."
-              onChangeText={(userToFind) => this.setState({userToFind})}
-              value={this.state.userToFind}
-            />
-            <View style={styles.flexContainerButtons}>
+          <Text style={styles.title}>Update post</Text>
+          <View style={styles.listPost}>
+            <View style={styles.cardBackground}>
+              <Text style={styles.boldText}>
+                {'Post from ' + this.state.listData.author.first_name + ' ' +
+                  this.state.listData.author.last_name + ':'}{'\n'}{'\n'}
+              </Text>
+              <TextInput style={styles.textInput}
+                placeholder={this.state.listData.text}
+                onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+                value={this.state.userTextToPost}
+              />
+              <Text style={styles.boldText}>
+                {'\n'}{new Date(this.state.listData.timestamp).toDateString() +
+                  ' | Likes: ' + this.state.listData.numLikes}{'\n'}{'\n'}
+              </Text>
+              <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.findUser()}>
-                <Text style={styles.buttonText}>Search</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.getUsers()}>
-                <Text style={styles.buttonText}>Reset</Text>
+                  onPress={() => this.updatePost()}>
+                  <Text style={styles.buttonText}>Update post</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.lineSeperator}></View>
           </View>
-          <FlatList style={styles.flatList}
-            data={this.state.listData}
-            renderItem={({item}) => (
-              <View style={styles.cardBackground}>
-                <Text style={styles.boldText}>
-                  {'Username: ' + item.user_givenname + ' ' +
-                  item.user_familyname} {'\n'}{'\n'}
-                </Text>
-                <View style={styles.flexContainerButtons}>
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => this.addFriend(item.user_id)}>
-                    <Text style={styles.buttonText}>Send {item.user_givenname} a friend request</Text>
-                  </TouchableOpacity>
-                </View>
-                {
-                // Add a if statement for if user is already friends,
-                // dont display there name
-                }
-              </View>
-            )}
-            keyExtractor={(item, index) => item.user_id.toString()}
-          />
+        </View>
         </View>
       );
     }
@@ -198,18 +159,17 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    justifyContent: 'space-between',
   },
   flexContainerButtons: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  flatList: {
+  listPost: {
     paddingLeft: 5,
     paddingRight: 5,
   },
-  searchUserView: {
+  postOnProfileView: {
     paddingLeft: 5,
     paddingRight: 5,
   },
@@ -237,6 +197,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
+  },
+  postOnProfileButton: {
+    padding: 7.5,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.theme,
+    color: Colors.text,
   },
   button: {
     flex: 1,
@@ -271,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FindFriendsScreen;
+export default UpdatePostScreen;
