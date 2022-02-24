@@ -72,6 +72,52 @@ class FriendRequestsScreen extends Component {
         });
   };
 
+  acceptFriendRequest = async (userId) => {
+    // Store the auth key as a constant - retrieved from async storage
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
+      method: 'POST',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            this.componentDidMount();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
+  rejectFriendRequest = async (userId) => {
+    // Store the auth key as a constant - retrieved from async storage
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
+      method: 'DELETE',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            this.componentDidMount();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('Login');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -106,11 +152,11 @@ class FriendRequestsScreen extends Component {
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.acceptFriendRequest(item.user_id)}>
                     <Text style={styles.buttonText}>Accept request</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.rejectFriendRequest(item.user_id)}>
                     <Text style={styles.buttonText}>Decline request</Text>
                   </TouchableOpacity>
                 </View>
@@ -209,6 +255,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
 });
-
 
 export default FriendRequestsScreen;
