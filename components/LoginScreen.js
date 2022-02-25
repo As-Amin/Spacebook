@@ -1,31 +1,39 @@
-import {Text, TouchableOpacity, StyleSheet, View, TextInput, ScrollView}
-  from 'react-native';
+// eslint-disable-next-line max-len
+import {Text, TouchableOpacity, StyleSheet, View, TextInput, ScrollView} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../constants/colors.js';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 /**
- * Login Screen class prompting users to create an account or sign in.
+ * Login screen class allowing users to login to their accounts.
+ * @return {render} Renders the login screen.
  */
 class LoginScreen extends Component {
   /**
-     * Constuctor for the Login Screen component class inheriting properties
-     * from the Component class
-     * @param {Component} props Inherited properties for the components.
-     */
+    * Constuctor for the login screen component class inheriting properties
+    * from the Component class
+    * @param {Component} props Inherited properties for the components.
+  */
   constructor(props) {
     super(props);
     this.state = {
       email: '',
       password: '',
+      errorMessageBoth: '',
       errorMessageEmail: '',
       errorMessagePassword: '',
     };
   }
 
+  /**
+    * Logs in an existing user to Spacebook by sending a POST request to
+    * the API, ensuring details are valid and calling the next screen.
+    * @return {response} Response from the fetch statement for logging in.
+  */
   login = async () => {
     this.setState({
+      errorMessageBoth: '',
       errorMessageEmail: '',
       errorMessagePassword: '',
     });
@@ -52,6 +60,11 @@ class LoginScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 400) {
+            this.setState({
+              password: '',
+              errorMessageBoth: 'Invalid email or password. Please try again.',
+            });
+            this.render();
             throw new 'Invalid email or password';
           } else {
             throw new 'Something went wrong';
@@ -60,13 +73,13 @@ class LoginScreen extends Component {
         .then(async (responseJson) => {
           await AsyncStorage.setItem('@user_id', responseJson.id);
           await AsyncStorage.setItem('@session_token', responseJson.token);
-          // Security - Reset email and password variables once logged in
-          // so not saved when logged out
+          // Reset email and password variables once logged in
+          // so not saved when logged out - Security
           this.setState({
             email: '',
             password: '',
           });
-          this.props.navigation.navigate('PostLogin');
+          this.props.navigation.navigate('PostLoginScreen');
         })
         .catch((error) => {
           console.log(error);
@@ -74,9 +87,9 @@ class LoginScreen extends Component {
   };
 
   /**
- * Main App.js constructor to connect components together.
- * @return {View} The stack navigator for logging in,
- * signing up and the other screens post log in
+ * Renders the GUI allowing users to navigate and interact with
+ * login screen.
+ * @return {View} The container for the login screen.
  */
   render() {
     return (
@@ -84,26 +97,38 @@ class LoginScreen extends Component {
         <ScrollView style={styles.scrollView}>
           <Text style={styles.title}>
             <IonIcons style={styles.logo}
-              name={'planet-outline'}
-            /> Spacebook</Text>
+              name={'planet-outline'}/>
+            {' Spacebook'}
+          </Text>
           <TextInput style={styles.textInput}
-            placeholder="Enter your email..."
+            placeholder='Enter your email...'
             onChangeText={(email) => this.setState({email})}
-            value={this.state.email}
-          />
+            value={this.state.email}/>
           <TextInput style={styles.textInput}
-            placeholder="Enter your password..."
+            placeholder='Enter your password...'
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
-            secureTextEntry
-          />
+            secureTextEntry/>
+          <Text style={styles.textError}>
+            {this.state.errorMessageBoth}
+          </Text>
+          <Text style={styles.textError}>
+            {this.state.errorMessageEmail}
+          </Text>
+          <Text style={styles.textError}>
+            {this.state.errorMessagePassword}
+          </Text>
           <TouchableOpacity style={styles.button}
             onPress={() => this.login()}>
-            <Text style={styles.text}>Login</Text>
+            <Text style={styles.text}>
+              {'Login'}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button}
-            onPress={() => this.props.navigation.navigate('SignUp')}>
-            <Text style={styles.text}>Don&apos;t have an account?</Text>
+            onPress={() => this.props.navigation.navigate('SignUpScreen')}>
+            <Text style={styles.text}>
+              {'Dont have an account?'}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -147,6 +172,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
   },
+  textError: {
+    paddingLeft: 7.5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Colors.error,
+  },
   title: {
     padding: 5,
     margin: 5,
@@ -165,3 +196,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
+

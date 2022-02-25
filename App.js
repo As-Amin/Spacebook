@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
-
 import LoginScreen from './components/LoginScreen';
 import SignUpScreen from './components/SignUpScreen';
 import PostLoginScreen from './components/PostLoginScreen';
-
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Colors} from './constants/colors.js';
@@ -32,23 +30,20 @@ class Spacebook extends Component {
  */
   render() {
     return (
-      <NavigationContainer theme = {MyTheme}>
+      <NavigationContainer theme={MyTheme}>
         <Stack.Navigator>
           <Stack.Screen
-            name='Login'
+            name='LoginScreen'
             component={LoginScreen}
-            options={{headerShown: false}}
-          />
+            options={{headerShown: false}}/>
           <Stack.Screen
-            name='SignUp'
+            name='SignUpScreen'
             component={SignUpScreen}
-            options={{title: 'Back to login'}}
-          />
+            options={{title: 'Back to login'}}/>
           <Stack.Screen
-            name='PostLogin'
+            name='PostLoginScreen'
             component={PostLoginScreen}
-            options={{headerShown: false}}
-          />
+            options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

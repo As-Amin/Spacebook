@@ -57,7 +57,7 @@ class AccountScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 404) {
             throw new Error('Cannot find user');
           } else {
@@ -86,9 +86,9 @@ class AccountScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else {
             throw new Error('Something went wrong');
           }
@@ -135,7 +135,7 @@ class AccountScreen extends Component {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
-      this.props.navigation.navigate('Login');
+      this.props.navigation.navigate('LoginScreen');
     }
   };
 
@@ -194,7 +194,7 @@ class AccountScreen extends Component {
             <View style={styles.lineSeperator}></View>
             <TouchableOpacity style={styles.button}
               onPress={() => this.logOut() &&
-                      this.props.navigation.navigate('Login')}>
+                      this.props.navigation.navigate('LoginScreen')}>
               <Text style={styles.buttonText}>Log out</Text>
             </TouchableOpacity>
           </ScrollView>

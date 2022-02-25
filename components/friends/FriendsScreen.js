@@ -57,7 +57,7 @@ class FriendsScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else {
             throw new Error('Something went wrong');
           }
@@ -85,7 +85,7 @@ class FriendsScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else {
             throw new Error('Something went wrong');
           }
@@ -105,7 +105,7 @@ class FriendsScreen extends Component {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
-      this.props.navigation.navigate('Login');
+      this.props.navigation.navigate('LoginScreen');
     }
   };
 
@@ -153,7 +153,7 @@ class FriendsScreen extends Component {
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.props.navigation.navigate('GetFriendsPosts', {
+                    onPress={() => this.props.navigation.navigate('GetFriendsPostsScreen', {
                       friendId: item.user_id,
                       friendFirstName: item.user_givenname,
                     })}>

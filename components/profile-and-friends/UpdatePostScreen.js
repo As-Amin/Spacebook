@@ -48,7 +48,7 @@ class UpdatePostScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('Can only view posts of yourself or friends');
           } else {
@@ -90,7 +90,7 @@ class UpdatePostScreen extends Component {
               this.props.navigation.navigate('FriendsScreen');
             }
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('You can only update your own posts');
           } else {
@@ -111,7 +111,7 @@ class UpdatePostScreen extends Component {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
-      this.props.navigation.navigate('Login');
+      this.props.navigation.navigate('LoginScreen');
     }
   };
 
@@ -139,7 +139,8 @@ class UpdatePostScreen extends Component {
               </Text>
               <TextInput style={styles.textInput}
                 placeholder={this.state.listData.text}
-                onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+                onChangeText={(userTextToPost) =>
+                  this.setState({userTextToPost})}
                 value={this.state.userTextToPost}
               />
               <Text style={styles.boldText}>

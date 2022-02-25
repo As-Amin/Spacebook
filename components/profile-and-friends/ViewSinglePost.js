@@ -1,7 +1,6 @@
 /* eslint-disable require-jsdoc */
 // import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, FlatList} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -47,7 +46,7 @@ class ViewSinglePost extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('Can only view posts of yourself or friends');
           } else {
@@ -65,12 +64,12 @@ class ViewSinglePost extends Component {
           console.log(error);
         });
   };
-  
+
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
-      this.props.navigation.navigate('Login');
+      this.props.navigation.navigate('LoginScreen');
     }
   };
 

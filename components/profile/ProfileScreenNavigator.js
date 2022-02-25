@@ -23,7 +23,7 @@ class ProfileScreenNavigator extends Component {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name='ViewSinglePost'
+          name='ViewSinglePostScreen'
           component={ViewSinglePost}
           options={{title: 'Back to profile'}}
         />

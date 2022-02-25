@@ -26,12 +26,12 @@ class FriendsScreenNavigator extends Component {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name='GetFriendsPosts'
+          name='GetFriendsPostsScreen'
           component={GetFriendsPosts}
           options={{title: 'Back to friends'}}
         />
         <Stack.Screen
-          name='ViewSinglePost'
+          name='ViewSinglePostScreen'
           component={ViewSinglePost}
           options={{title: 'Back to friends profile'}}
         />

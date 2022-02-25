@@ -1,30 +1,36 @@
-import {StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity}
-  from 'react-native';
+// eslint-disable-next-line max-len
+import {StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
 import {Colors} from '../constants/colors.js';
+
 /**
- * Logic Screen class prompting users to create an account or sign in.
+ * Sign up screen class allowing users to sign up to Spacebook.
  * @return {render} Renders the sign up screen.
  */
 class SignUpScreen extends Component {
   /**
-     * Constuctor for the Login Screen component class inheriting properties
-     * from the Component class
-     * @param {Component} props Inherited properties for the components.
-     */
+    * Constuctor for the Sign up screen component class inheriting properties
+    * from the Component class
+    * @param {Component} props Inherited properties for the components.
+  */
   constructor(props) {
     super(props);
-
     this.state = {
+      // Details for the user signing up
       firstName: '',
       lastName: '',
       email: '',
       password: '',
+      // Error messages for invalid email and password
       errorMessageEmail: '',
       errorMessagePassword: '',
     };
   }
 
+  /**
+    * Signs up a user to Spacebook by sending a POST request to the API.
+    * @return {response} Response from the fetch statement for signing up.
+  */
   signup = () => {
     this.setState({
       errorMessageEmail: '',
@@ -35,7 +41,7 @@ class SignUpScreen extends Component {
         errorMessageEmail: 'Your email address is not valid!',
       });
       this.render();
-    }  
+    }
     if (this.state.password.toString().length < 5) {
       this.setState({
         errorMessagePassword: 'Your password must be longer than 5 characters!',
@@ -56,7 +62,6 @@ class SignUpScreen extends Component {
     })
         .then((response) => {
           if (response.status === 201) {
-            this.props.navigation.navigate('Login');
             return response.json();
           } else if (response.status === 400) {
             throw new Error('Failed validation');
@@ -66,7 +71,7 @@ class SignUpScreen extends Component {
         })
         .then((responseJson) => {
           console.log('User created with ID: ', responseJson);
-          this.props.navigation.navigate('Login');
+          this.props.navigation.navigate('LoginScreen');
         })
         .catch((error) => {
           console.log(error);
@@ -74,41 +79,45 @@ class SignUpScreen extends Component {
   };
 
   /**
- * Main App.js constructor to connect components together.
- * @return {View} The stack navigator for logging in,
- * signing up and the other screens post log in
+ * Renders the GUI allowing users to navigate and interact with
+ * sign up screen.
+ * @return {View} The container for the sign up screen.
  */
   render() {
     return (
       <View style={styles.flexContainer}>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.title}>Sign up</Text>
+          <Text style={styles.title}>
+            {'Sign up'}
+          </Text>
           <TextInput style={styles.textInput}
-            placeholder="Enter your first name..."
+            placeholder='Enter your first name...'
             onChangeText={(firstName) => this.setState({firstName})}
-            value={this.state.first_name}
-          />
+            value={this.state.firstName}/>
           <TextInput style={styles.textInput}
-            placeholder="Enter your last name..."
+            placeholder='Enter your last name...'
             onChangeText={(lastName) => this.setState({lastName})}
-            value={this.state.last_name}
-          />
+            value={this.state.lastName}/>
           <TextInput style={styles.textInput}
-            placeholder="Enter your email..."
+            placeholder='Enter your email...'
             onChangeText={(email) => this.setState({email})}
-            value={this.state.email}
-          />
+            value={this.state.email}/>
           <TextInput style={styles.textInput}
             placeholder="Enter your password..."
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
-            secureTextEntry
-          />
-          <Text style={styles.textError}>{this.state.errorMessageEmail}</Text>
-          <Text style={styles.textError}>{this.state.errorMessagePassword}</Text>
+            secureTextEntry/>
+          <Text style={styles.textError}>
+            {this.state.errorMessageEmail}
+          </Text>
+          <Text style={styles.textError}>
+            {this.state.errorMessagePassword}
+          </Text>
           <TouchableOpacity style={styles.button}
             onPress={() => this.signup()}>
-            <Text style={styles.text}>Create account</Text>
+            <Text style={styles.text}>
+              {'Create account'}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   textError: {
-    paddingLeft: 5,
+    paddingLeft: 7.5,
     fontWeight: 'bold',
     fontSize: 16,
     color: Colors.error,
@@ -170,3 +179,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignUpScreen;
+

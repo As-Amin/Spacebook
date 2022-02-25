@@ -75,7 +75,7 @@ class ViewProfileScreen extends Component {
           if (response.status === 200) {
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('Can only view posts of yourself or friends');
           } else {
@@ -115,7 +115,7 @@ class ViewProfileScreen extends Component {
             this.getPosts();
             return response.json();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 404) {
             throw new Error('Post not found!');
           } else {
@@ -151,7 +151,7 @@ class ViewProfileScreen extends Component {
           if (response.status === 200) {
             this.getPosts();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('You have already liked this post!');
           } else {
@@ -181,7 +181,7 @@ class ViewProfileScreen extends Component {
           if (response.status === 200) {
             this.getPosts();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('You have not liked this post!');
           } else {
@@ -213,7 +213,7 @@ class ViewProfileScreen extends Component {
           if (response.status === 200) {
             this.getPosts();
           } else if (response.status === 401) {
-            this.props.navigation.navigate('Login');
+            this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
             throw new Error('You can only delete your own posts!');
           } else {
@@ -229,7 +229,7 @@ class ViewProfileScreen extends Component {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
     if (value == null) {
-      this.props.navigation.navigate('Login');
+      this.props.navigation.navigate('LoginScreen');
     }
   };
 
@@ -294,7 +294,7 @@ class ViewProfileScreen extends Component {
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() =>
-                      this.props.navigation.navigate('ViewSinglePost', {
+                      this.props.navigation.navigate('ViewSinglePostScreen', {
                         userId: this.state.userId,
                         postId: item.post_id,
                         postAuthorFirstName: item.author.first_name,
