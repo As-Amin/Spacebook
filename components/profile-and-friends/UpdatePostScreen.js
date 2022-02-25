@@ -81,9 +81,9 @@ class UpdatePostScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            //If the friends first name is passed in, go to the friends screen,
-            //or if the first first name hasn't changed from 'profile' go back
-            //to profile screen
+            // If the friends first name is passed in, go to the friends screen,
+            // or if the first first name hasn't changed from 'profile' go back
+            // to profile screen
             if (this.props.route.params.friendFirstName === 'Profile') {
               this.props.navigation.navigate('ProfileScreen');
             } else {
@@ -147,13 +147,13 @@ class UpdatePostScreen extends Component {
                   ' | Likes: ' + this.state.listData.numLikes}{'\n'}{'\n'}
               </Text>
               <View style={styles.flexContainerButtons}>
-              <TouchableOpacity style={styles.button}
+                <TouchableOpacity style={styles.button}
                   onPress={() => this.updatePost()}>
                   <Text style={styles.buttonText}>Update post</Text>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
         </View>
       );
     }
@@ -230,12 +230,11 @@ const styles = StyleSheet.create({
   },
   textInput: {
     padding: 5,
-    margin: 5,
     borderRadius: 10,
     borderWidth: 1,
     fontSize: 16,
     fontWeight: 'bold',
-    backgroundColor: Colors.lighterBackground,
+    backgroundColor: Colors.darkerBackground,
     color: Colors.text,
   },
   lineSeperator: {
