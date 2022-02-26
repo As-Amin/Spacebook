@@ -1,27 +1,28 @@
-/* eslint-disable require-jsdoc */
-// import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity, TextInput} from 'react-native';
+// eslint-disable-next-line max-len
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 
+/**
+ * View profile screen to display the profile of the user or friend
+ * whos profile is requested to be viewed.
+ * @return {render} Renders the profile screen.
+*/
 class ViewProfileScreen extends Component {
   /**
-  * Constuctor for the Home Screen component class inheriting properties
-  * from the Component class
+  * Constuctor for the view profile screen component class inheriting
+  * properties from the Component class
   * @param {Component} props Inherited properties for the components.
   */
   constructor(props) {
     super(props);
-
-    // State object to store all data
     this.state = {
+      isLoading: true,
+      listData: [],
       userId: '', // ID of user whos profile is being displayed
       friendFirstName: 'Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
-      isLoading: true,
-      listData: [],
       userTextToPost: '',
     };
   }
@@ -44,8 +45,9 @@ class ViewProfileScreen extends Component {
   }
 
   /**
-  * Function loading users posts into the the DOM tree from server.
-  * @return {state} The states loading config and list data
+  * Function loading all of the users post to update from the server.
+  * @return {fetch} Response from the fetch statement for getting
+  * the posts.
   */
   getPosts = async () => {
     // Store the user id as a constant - retrieved from async storage
@@ -95,8 +97,10 @@ class ViewProfileScreen extends Component {
   };
 
   /**
-  * Function which posts on the users individual profile
-  * @return {state} The states loading config and list data
+  * Function allowing user to post on the profile of the friend or their
+  * own profile.
+  * @return {fetch} Response from the fetch statement for
+  * posting a post on the profile.
   */
   postOnProfile = async () => {
     const token = await AsyncStorage.getItem('@session_token');
@@ -113,7 +117,9 @@ class ViewProfileScreen extends Component {
         .then((response) => {
           if (response.status === 201) {
             this.getPosts();
-            return response.json();
+            this.setState({
+              userTextToPost: '', // So user can post again
+            });
           } else if (response.status === 401) {
             this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 404) {
@@ -121,12 +127,6 @@ class ViewProfileScreen extends Component {
           } else {
             throw new Error('Something went wrong');
           }
-        })
-        .then(() => {
-          // Reset user text so user can post again
-          this.setState({
-            userTextToPost: '',
-          });
         })
         .catch((error) => {
           console.log(error);
@@ -136,8 +136,9 @@ class ViewProfileScreen extends Component {
   /**
   * Function which sends a POST request to like a post
   * into the the DOM tree from server.
-  * @param {int} postId The identifier for the post to like
-  * @return {state} The states loading config and list data
+  * @param {int} postId The identifier for the post to like.
+  * @return {fetch} Response from the fetch statement for
+  * liking a users post.
   */
   likePost = async (postId) => {
     const token = await AsyncStorage.getItem('@session_token');
@@ -166,8 +167,9 @@ class ViewProfileScreen extends Component {
   /**
   * Function which sends a DELETE request to dislike a post
   * into the the DOM tree from server.
-  * @param {int} postId The identifier for the post to like
-  * @return {state} The states loading config and list data
+  * @param {int} postId The identifier for the post to dislike.
+  * @return {fetch} Response from the fetch statement for
+  * disliking a users post.
   */
   dislikePost = async (postId) => {
     const token = await AsyncStorage.getItem('@session_token');
@@ -194,15 +196,14 @@ class ViewProfileScreen extends Component {
   };
 
   /**
-  * Function which sends a DELETE request to delete a post
-  * into the the DOM tree from server.
-  * @param {int} postId The identifier for the post to delete
-  * @return {state} The states loading config and list data
+  * Function which sends a DELETE request to delete a post.
+  * @param {int} postId The identifier for the post to delete.
+  * @return {fetch} Response from the fetch statement for
+  * deleting a users post.
   */
   deletePost = async (postId) => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString(), {
       method: 'DELETE',
       headers: {
@@ -225,6 +226,10 @@ class ViewProfileScreen extends Component {
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -234,18 +239,20 @@ class ViewProfileScreen extends Component {
   };
 
   /**
-  * Renders the profile page and all of its contents.
-  * @return {View} The loading text.
-  * @return {View} The scrollable view for the posts.
+  * Renders the GUI allowing users to navigate and interact with
+  * profile screen.
+  * @return {View} The container for the profile screen.
   */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>{this.state.friendFirstName}</Text>
+          <Text style={styles.title}>
+            {this.state.friendFirstName}
+          </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading posts...
+              {'Loading posts...'}
             </Text>
           </FlatList>
         </View>
@@ -253,25 +260,32 @@ class ViewProfileScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>{this.state.friendFirstName}</Text>
+          <Text style={styles.title}>
+            {this.state.friendFirstName}
+          </Text>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
               placeholder="New post here..."
               onChangeText={(userTextToPost) => this.setState({userTextToPost})}
-              value={this.state.userTextToPost}
-            />
+              value={this.state.userTextToPost}/>
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
                 onPress={() => this.postOnProfile()}>
-                <Text style={styles.buttonText}>Post</Text>
+                <Text style={styles.buttonText}>
+                  {'Post'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
                 onPress={() => console.log('worked')}>
-                <Text style={styles.buttonText}>Save as draft</Text>
+                <Text style={styles.buttonText}>
+                  {'Save as draft'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
                 onPress={() => this.componentDidMount()}>
-                <Text style={styles.buttonText}>Refresh</Text>
+                <Text style={styles.buttonText}>
+                  {'Refresh'}
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
@@ -299,14 +313,18 @@ class ViewProfileScreen extends Component {
                         postId: item.post_id,
                         postAuthorFirstName: item.author.first_name,
                       })}>
-                    <Text style={styles.buttonText}>View</Text>
+                    <Text style={styles.buttonText}>
+                      {'View'}
+                    </Text>
                   </TouchableOpacity>
                   {item.author.user_id.toString() !==
                     this.state.loggedInAccountUserId ?
                     <></> :
                     <><TouchableOpacity style={styles.button}
                       onPress={() => this.deletePost(item.post_id)}>
-                      <Text style={styles.buttonText}>Delete</Text>
+                      <Text style={styles.buttonText}>
+                        {'Delete'}
+                      </Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
                       onPress={() =>
                         this.props.navigation.navigate('UpdatePostScreen', {
@@ -314,7 +332,9 @@ class ViewProfileScreen extends Component {
                           postId: item.post_id,
                           friendFirstName: this.state.friendFirstName,
                         })}>
-                      <Text style={styles.buttonText}>Update</Text>
+                      <Text style={styles.buttonText}>
+                        {'Update'}
+                      </Text>
                     </TouchableOpacity></> }
                   {item.author.user_id.toString() ===
                     this.state.loggedInAccountUserId ?
@@ -322,11 +342,15 @@ class ViewProfileScreen extends Component {
                     <><TouchableOpacity style={styles.button}
                       onPress={() =>
                         this.likePost(item.post_id)}>
-                      <Text style={styles.buttonText}>Like</Text>
+                      <Text style={styles.buttonText}>
+                        {'Like'}
+                      </Text>
                     </TouchableOpacity><TouchableOpacity style={styles.button}
                       onPress={() =>
                         this.dislikePost(item.post_id)}>
-                      <Text style={styles.buttonText}>Dislike</Text>
+                      <Text style={styles.buttonText}>
+                        {'Dislike'}
+                      </Text>
                     </TouchableOpacity></> }
                 </View>
               </View>

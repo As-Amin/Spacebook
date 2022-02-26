@@ -11,4 +11,9 @@ git add .
 git commit -m 'message here'
 git push origin master
 
+To Delete files added before gitignore added:
+git rm -r --cached .
+git add .
+git commit -m "Drop files from .gitignore"
+
 Update repo on local with GitHub version: git pull (link of repo)

@@ -1,18 +1,26 @@
-/* eslint-disable require-jsdoc */
-// import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 import 'react-native-gesture-handler';
 
+/**
+ * View single post screen to display the single post of the user or friend
+ * whos post on their profile is requested to be viewed.
+ * @return {render} Renders the view single post screen.
+*/
 class ViewSinglePost extends Component {
+  /**
+  * Constuctor for the view single post screen component class inheriting
+  * properties from the Component class
+  * @param {Component} props Inherited properties for the components.
+  */
   constructor(props) {
     super(props);
     this.state = {
-      loggedInAccountUserId: '',
       isLoading: true,
       listData: [],
+      loggedInAccountUserId: '',
     };
   }
 
@@ -33,6 +41,11 @@ class ViewSinglePost extends Component {
     this.unsubscribe();
   }
 
+  /**
+  * Function loading the single post to update from the server.
+  * @return {fetch} Response from the fetch statement for getting
+  * the single post.
+  */
   getSinglePost = async () => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
@@ -65,6 +78,10 @@ class ViewSinglePost extends Component {
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen

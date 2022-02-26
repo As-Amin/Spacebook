@@ -1,21 +1,22 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable max-len */
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 
+/**
+ * Friend requests screen to display the friend requests of the user,
+ * allowing users to accept or decline the requests.
+ * @param {int} userId The user id of the user to send a accept a request of.
+ * @return {render} Renders the account screen.
+ */
 class FriendRequestsScreen extends Component {
   /**
-  * Constuctor for the Friends Screen component class inheriting properties
-  * from the Component class
+  * Constuctor for the friend requests screen component class inheriting
+  * properties from the Component class
   * @param {Component} props Inherited properties for the components.
   */
   constructor(props) {
     super(props);
-
-    // State object to store all data
     this.state = {
       isLoading: true,
       listData: [],
@@ -40,8 +41,9 @@ class FriendRequestsScreen extends Component {
   }
 
   /**
-  * Function loading friend requests into the the DOM tree from server.
-  * @return {state} The states loading config and list data
+  * Function loading all of the users friend requests from the server.
+  * @return {fetch} Response from the fetch statement for getting all
+  * friend requests.
   */
   getFriendRequests = async () => {
     // Store the auth key as a constant - retrieved from async storage
@@ -72,6 +74,13 @@ class FriendRequestsScreen extends Component {
         });
   };
 
+  /**
+  * Function allowing user to accept a friend request from the user who
+  * sent it.
+  * @param {int} userId The user id of the user to send a accept a request of.
+  * @return {fetch} Response from the fetch statement for accepting a friend
+  * request.
+  */
   acceptFriendRequest = async (userId) => {
     // Store the auth key as a constant - retrieved from async storage
     const token = await AsyncStorage.getItem('@session_token');
@@ -95,6 +104,13 @@ class FriendRequestsScreen extends Component {
         });
   };
 
+  /**
+  * Function allowing user to reject a friend request from the user who
+  * sent it.
+  * @param {int} userId The user id of the user to send a reject a request of.
+  * @return {fetch} Response from the fetch statement for rejecting a friend
+  * request.
+  */
   rejectFriendRequest = async (userId) => {
     // Store the auth key as a constant - retrieved from async storage
     const token = await AsyncStorage.getItem('@session_token');
@@ -118,6 +134,10 @@ class FriendRequestsScreen extends Component {
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -126,14 +146,21 @@ class FriendRequestsScreen extends Component {
     }
   };
 
+  /**
+  * Renders the GUI allowing users to navigate and interact with
+  * friend requests screen.
+  * @return {View} The container for the friend requests screen.
+  */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friend requests</Text>
+          <Text style={styles.title}>
+            {'Friend requests'}
+          </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading friend requests...
+              {'Loading friend requests...'}
             </Text>
           </FlatList>
         </View>
@@ -141,7 +168,9 @@ class FriendRequestsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friend requests</Text>
+          <Text style={styles.title}>
+            {'Friend requests'}
+          </Text>
           <FlatList style={styles.flatList}
             data={this.state.listData}
             renderItem={({item}) => (
@@ -153,11 +182,15 @@ class FriendRequestsScreen extends Component {
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.acceptFriendRequest(item.user_id)}>
-                    <Text style={styles.buttonText}>Accept request</Text>
+                    <Text style={styles.buttonText}>
+                      {'Accept request'}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.rejectFriendRequest(item.user_id)}>
-                    <Text style={styles.buttonText}>Decline request</Text>
+                    <Text style={styles.buttonText}>
+                      {'Decline request'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

@@ -1,27 +1,29 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable max-len */
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity, TextInput} from 'react-native';
+// eslint-disable-next-line max-len
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 
+/**
+ * Friends screen to display the friends of the user, allowing users
+ * to view, add and interact with profiles.
+ * @return {render} Renders the account screen.
+*/
 class FriendsScreen extends Component {
   /**
-  * Constuctor for the Friends Screen component class inheriting properties
-  * from the Component class
+  * Constuctor for the friends screen component class inheriting
+  * properties from the Component class
   * @param {Component} props Inherited properties for the components.
   */
   constructor(props) {
     super(props);
-
-    // State object to store all data
     this.state = {
       isLoading: true,
       listData: [],
       userToFind: '',
     };
   }
+
   /**
   * Instantiate network request to load data, call the function to retrieve data
   */
@@ -40,8 +42,9 @@ class FriendsScreen extends Component {
   }
 
   /**
-  * Function loading friends into the the DOM tree from server.
-  * @return {state} The states loading config and list data
+  * Function loading all of the users friends from the server.
+  * @return {fetch} Response from the fetch statement for getting all
+  * friends.
   */
   getFriends = async () => {
     // Store the auth key as a constant - retrieved from async storage
@@ -73,9 +76,15 @@ class FriendsScreen extends Component {
         });
   };
 
-  findUser = async (userToFind) => {
+  /**
+  * Function loading all of the users friends from the server with
+  * keywords in their name included from the search box input.
+  * @return {fetch} Response from the fetch statement for getting all
+  * friends.
+  */
+  findUser = async () => {
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search?q=' + userToFind.toString() + '&limit=20&search_in=friends', {
+    return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20&search_in=friends', {
       method: 'GET',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -101,6 +110,10 @@ class FriendsScreen extends Component {
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -109,14 +122,21 @@ class FriendsScreen extends Component {
     }
   };
 
+  /**
+  * Renders the GUI allowing users to navigate and interact with
+  * friends screen.
+  * @return {View} The container for the friends screen.
+  */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friends</Text>
+          <Text style={styles.title}>
+            {'Friends'}
+          </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading friends...
+              {'Loading friends...'}
             </Text>
           </FlatList>
         </View>
@@ -124,21 +144,26 @@ class FriendsScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Friends</Text>
+          <Text style={styles.title}>
+            {'Friends'}
+          </Text>
           <View style={styles.searchUserView}>
             <TextInput style={styles.textInput}
               placeholder="Enter friend name here..."
               onChangeText={(userToFind) => this.setState({userToFind})}
-              value={this.state.userToFind}
-            />
+              value={this.state.userToFind}/>
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
                 onPress={() => this.findUser(this.state.userToFind)}>
-                <Text style={styles.buttonText}>Search</Text>
+                <Text style={styles.buttonText}>
+                  {'Search'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
                 onPress={() => this.getFriends()}>
-                <Text style={styles.buttonText}>Reset</Text>
+                <Text style={styles.buttonText}>
+                  {'Reset'}
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
@@ -153,11 +178,14 @@ class FriendsScreen extends Component {
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.props.navigation.navigate('GetFriendsPostsScreen', {
-                      friendId: item.user_id,
-                      friendFirstName: item.user_givenname,
-                    })}>
-                    <Text style={styles.buttonText}>View and add posts</Text>
+                    onPress={() =>
+                      this.props.navigation.navigate('GetFriendsPostsScreen', {
+                        friendId: item.user_id,
+                        friendFirstName: item.user_givenname,
+                      })}>
+                    <Text style={styles.buttonText}>
+                      {'View and add posts'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

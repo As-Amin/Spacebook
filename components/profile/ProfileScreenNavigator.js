@@ -1,37 +1,37 @@
-/* eslint-disable require-jsdoc */
-// import {StatusBar} from 'expo-status-bar';
 import React, {Component} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import 'react-native-gesture-handler';
-
-import ProfileScreen from
-  '../profile-and-friends/ViewProfileScreen';
-import ViewSinglePost from
-  '../profile-and-friends/ViewSinglePost';
-import UpdatePostScreen from
-  '../profile-and-friends/UpdatePostScreen';
+import ProfileScreen from '../profile-and-friends/ViewProfileScreen';
+import ViewSinglePost from '../profile-and-friends/ViewSinglePost';
+import UpdatePostScreen from '../profile-and-friends/UpdatePostScreen';
 
 const Stack = createStackNavigator();
 
+/**
+ * Profile screen stack navigator allowing users to navigate
+ * through every screen related to the profile screen
+ * @return {render} Renders the stack navigator.
+*/
 class ProfileScreenNavigator extends Component {
+  /**
+  * Renders the stack navgigator for the profile related screens.
+  * @return {Stack.Navigator} The stack navigator.
+  */
   render() {
     return (
       <Stack.Navigator>
         <Stack.Screen
           name='ProfileScreen'
           component={ProfileScreen}
-          options={{headerShown: false}}
-        />
+          options={{headerShown: false}}/>
         <Stack.Screen
           name='ViewSinglePostScreen'
           component={ViewSinglePost}
-          options={{title: 'Back to profile'}}
-        />
+          options={{title: 'Back to profile'}}/>
         <Stack.Screen
           name='UpdatePostScreen'
           component={UpdatePostScreen}
-          options={{title: 'Back to profile'}}
-        />
+          options={{title: 'Back to profile'}}/>
       </Stack.Navigator>
     );
   }

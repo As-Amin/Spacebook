@@ -1,16 +1,22 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable react/jsx-no-undef */
-import {StyleSheet, View, Text, ScrollView,
-  TouchableOpacity, TextInput} from 'react-native';
+// eslint-disable-next-line max-len
+import {StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 
+/**
+ * Account screen class allowing users to manage their profile,
+ * and sign out.
+ * @return {render} Renders the account screen.
+ */
 class AccountScreen extends Component {
+  /**
+    * Constuctor for the account screen component class inheriting properties
+    * from the Component class
+    * @param {Component} props Inherited properties for the components.
+  */
   constructor(props) {
     super(props);
-
-    // State object to store all data
     this.state = {
       firstName: '',
       lastName: '',
@@ -40,7 +46,7 @@ class AccountScreen extends Component {
 
   /**
   * Function loading users information into the the DOM tree from server.
-  * @return {state} The states loading config and list data
+  * @return {fetch} Response from the fetch statement for getting users info.
   */
   getUserInfo = async () => {
     // Store the user id as a constant - retrieved from async storage
@@ -75,6 +81,10 @@ class AccountScreen extends Component {
         });
   };
 
+  /**
+  * Function allowing users to log out of their accounts.
+  * @return {fetch} Response from the fetch statement for signing out.
+  */
   logOut = async () => {
     const token = await AsyncStorage.getItem('@session_token');
     await AsyncStorage.removeItem('@session_token');
@@ -99,6 +109,12 @@ class AccountScreen extends Component {
         });
   };
 
+  /**
+  * Function allowing users to update their personal information such
+  * as name, email and password.
+  * @return {fetch} Response from the fetch statement for patch request
+  * to update users information.
+  */
   updateUserInfo = async () => {
     // Validation here
     const user = await AsyncStorage.getItem('@user_id');
@@ -131,6 +147,10 @@ class AccountScreen extends Component {
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -139,20 +159,29 @@ class AccountScreen extends Component {
     }
   };
 
+  /**
+  * Renders the GUI allowing users to navigate and interact with
+  * account screen.
+  * @return {View} The container for the account screen.
+  */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Account</Text>
+          <Text style={styles.title}>
+            {'Account'}
+          </Text>
           <Text style={styles.text}>
-            Loading account settings...
+            {'Loading account settings...'}
           </Text>
         </View>
       );
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Account</Text>
+          <Text style={styles.title}>
+            {'Account'}
+          </Text>
           <ScrollView style={styles.scrollView}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>

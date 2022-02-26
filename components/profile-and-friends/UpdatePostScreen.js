@@ -1,19 +1,27 @@
-/* eslint-disable require-jsdoc */
-// import {StatusBar} from 'expo-status-bar';
-import {StyleSheet, View, Text, FlatList,
-  TouchableOpacity, TextInput} from 'react-native';
+// eslint-disable-next-line max-len
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 import 'react-native-gesture-handler';
 
+/**
+ * Update post screen to display the single post to update, allowing user
+ * to change the text in the post.
+ * @return {render} Renders the post screen.
+*/
 class UpdatePostScreen extends Component {
+  /**
+  * Constuctor for the update post screen component class inheriting
+  * properties from the Component class
+  * @param {Component} props Inherited properties for the components.
+  */
   constructor(props) {
     super(props);
     this.state = {
-      loggedInAccountUserId: '',
       isLoading: true,
       listData: [],
+      loggedInAccountUserId: '',
       userTextToPost: '',
     };
   }
@@ -35,6 +43,11 @@ class UpdatePostScreen extends Component {
     this.unsubscribe();
   }
 
+  /**
+  * Function loading the single post to update from the server.
+  * @return {fetch} Response from the fetch statement for getting
+  * the single post.
+  */
   getSinglePost = async () => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
@@ -67,6 +80,11 @@ class UpdatePostScreen extends Component {
         });
   };
 
+  /**
+  * Function sending a patch fetch request to update the post with the new
+  * text in the textbox (stored in the state).
+  * @return {fetch} Response from the fetch statement for updating the post.
+  */
   updatePost = async () => {
     const token = await AsyncStorage.getItem('@session_token');
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
@@ -89,6 +107,9 @@ class UpdatePostScreen extends Component {
             } else {
               this.props.navigation.navigate('FriendsScreen');
             }
+            this.setState({
+              userTextToPost: '',
+            });
           } else if (response.status === 401) {
             this.props.navigation.navigate('LoginScreen');
           } else if (response.status === 403) {
@@ -97,16 +118,15 @@ class UpdatePostScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .then(() => {
-          this.setState({
-            userTextToPost: '',
-          });
-        })
         .catch((error) => {
           console.log(error);
         });
   };
 
+  /**
+  * Function checking if user is logged in and if they arent,
+  * renavigating to the login screen - increasing security.
+  */
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('@session_token');
     // If a session token is not found, navigate to login screen
@@ -115,14 +135,21 @@ class UpdatePostScreen extends Component {
     }
   };
 
+  /**
+  * Renders the GUI allowing users to navigate and interact with
+  * update post screen.
+  * @return {View} The container for the update post screen.
+  */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Update post</Text>
+          <Text style={styles.title}>
+            {'Update post'}
+          </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading post...
+              {'Loading post...'}
             </Text>
           </FlatList>
         </View>
@@ -130,7 +157,9 @@ class UpdatePostScreen extends Component {
     } else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>Update post</Text>
+          <Text style={styles.title}>
+            {'Update post'}
+          </Text>
           <View style={styles.listPost}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
@@ -141,8 +170,7 @@ class UpdatePostScreen extends Component {
                 placeholder={this.state.listData.text}
                 onChangeText={(userTextToPost) =>
                   this.setState({userTextToPost})}
-                value={this.state.userTextToPost}
-              />
+                value={this.state.userTextToPost}/>
               <Text style={styles.boldText}>
                 {'\n'}{new Date(this.state.listData.timestamp).toDateString() +
                   ' | Likes: ' + this.state.listData.numLikes}{'\n'}{'\n'}
@@ -150,7 +178,9 @@ class UpdatePostScreen extends Component {
               <View style={styles.flexContainerButtons}>
                 <TouchableOpacity style={styles.button}
                   onPress={() => this.updatePost()}>
-                  <Text style={styles.buttonText}>Update post</Text>
+                  <Text style={styles.buttonText}>
+                    {'Update post'}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
