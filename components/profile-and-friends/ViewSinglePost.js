@@ -90,14 +90,21 @@ class ViewSinglePost extends Component {
     }
   };
 
+  /**
+  * Renders the GUI allowing users to navigate and interact with
+  * view single post on profile screen.
+  * @return {View} The container for the view post screen.
+  */
   render() {
     if (this.state.isLoading) {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>View post</Text>
+          <Text style={styles.title}>
+            {'View post'}
+          </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
-              Loading post...
+              {'Loading post...'}
             </Text>
           </FlatList>
         </View>
@@ -106,7 +113,8 @@ class ViewSinglePost extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>
-            {this.props.route.params.postAuthorFirstName}{'\'s post'}</Text>
+            {this.props.route.params.postAuthorFirstName}{'\'s post'}
+          </Text>
           <View style={styles.listPost}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
