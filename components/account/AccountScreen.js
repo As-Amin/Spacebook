@@ -92,7 +92,7 @@ class AccountScreen extends Component {
     const token = await AsyncStorage.getItem('@session_token');
     await AsyncStorage.removeItem('@session_token');
     return fetch('http://localhost:3333/api/1.0.0/logout', {
-      method: 'POST', // POST request as sending request to like post
+      method: 'POST', // POST request as sending request to log out
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
       },
