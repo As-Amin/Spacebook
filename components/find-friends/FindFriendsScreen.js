@@ -91,7 +91,6 @@ class FindFriendsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
-            this.getUsers();
             return response.json();
           } else if (response.status === 401) {
             this.props.navigation.navigate('LoginScreen');
@@ -208,7 +207,7 @@ class FindFriendsScreen extends Component {
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.addFriend(item.user_id)}>
                     <Text style={styles.buttonText}>
-                      {'Send' + item.user_givenname + 'a friend request'}
+                      {'Send ' + item.user_givenname + ' a friend request'}
                     </Text>
                   </TouchableOpacity>
                 </View>

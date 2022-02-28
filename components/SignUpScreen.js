@@ -40,13 +40,11 @@ class SignUpScreen extends Component {
       this.setState({
         errorMessageEmail: 'Your email address is not valid!',
       });
-      this.render();
     }
     if (this.state.password.toString().length < 5) {
       this.setState({
         errorMessagePassword: 'Your password must be longer than 5 characters!',
       });
-      this.render();
     }
     return fetch('http://localhost:3333/api/1.0.0/user', {
       method: 'POST',
@@ -103,7 +101,7 @@ class SignUpScreen extends Component {
             onChangeText={(email) => this.setState({email})}
             value={this.state.email}/>
           <TextInput style={styles.textInput}
-            placeholder="Enter your password..."
+            placeholder='Enter your password...'
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
             secureTextEntry/>
