@@ -39,7 +39,7 @@ class LoginScreen extends Component {
     });
     if (!this.state.email.toString().toLowerCase().match(/^\S+@\S+\.\S+$/)) {
       this.setState({
-        errorMessageEmail: 'Your email address is not valid!',
+        errorMessageEmail: 'Your email address is impossible',
       });
     }
     if (this.state.password.toString().length < 5) {
@@ -62,7 +62,6 @@ class LoginScreen extends Component {
               password: '',
               errorMessageBoth: 'Invalid email or password. Please try again.',
             });
-            this.render();
             throw new 'Invalid email or password';
           } else {
             throw new 'Something went wrong';

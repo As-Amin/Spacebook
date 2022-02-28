@@ -3,6 +3,9 @@ import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'rea
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Find friends screen class allowing users to find users to send
@@ -23,7 +26,6 @@ class FindFriendsScreen extends Component {
       isLoading: true,
       allUsersData: [],
       userFriendsData: [],
-      filteredUsersData: [],
     };
   }
 
@@ -128,9 +130,13 @@ class FindFriendsScreen extends Component {
     })
         .then((response) => {
           if (response.status === 200) {
+            toast.info('Request sent successfully!');
             this.getUsers();
           } else if (response.status === 401) {
             this.props.navigation.navigate('LoginScreen');
+          } else if (response.status === 403) {
+            toast.error('Waiting for this user to accept your request!');
+            throw new Error('Already sent this person a friend request!');
           } else {
             throw new Error('Something went wrong');
           }
@@ -178,15 +184,28 @@ class FindFriendsScreen extends Component {
   };
 
   /**
-  * Function which removes all of the users friends list from list
-  * of all users add as friends as they are already friends and this
-  * would lead to errors.
+  * Function which removes all of the users friends list aswell as
+  * the user from list of all users add as friends as they are
+  * already friends and they cannot add themselves, and this
+  * avoids errors.
   */
-  removeFriendsFromUsers = () => {
+  removeFriendsFromUsers = async () => {
+    const loggedInAccountUserId = await AsyncStorage.getItem('@user_id');
+    // Remove friends from the users list to add
     for (let i=0; i<this.state.allUsersData.length; i++) {
       for (let j=0; j<this.state.userFriendsData.length; j++) {
-        if (parseInt(this.state.allUsersData[i]['user_id']) ===
-        parseInt(this.state.userFriendsData[j]['user_id'])) {
+        const user = parseInt(this.state.allUsersData[i]['user_id']);
+        const friend = parseInt(this.state.userFriendsData[j]['user_id']);
+        if (user === friend) {
+          this.state.allUsersData.splice(i, 1);
+        }
+      }
+    }
+    // Remove logged in user from the users list
+    for (let i=0; i<this.state.allUsersData.length; i++) {
+      for (let j=0; j<this.state.userFriendsData.length; j++) {
+        const user = parseInt(this.state.allUsersData[i]['user_id']);
+        if (user === parseInt(loggedInAccountUserId)) {
           this.state.allUsersData.splice(i, 1);
         }
       }
@@ -203,6 +222,16 @@ class FindFriendsScreen extends Component {
     if (value == null) {
       this.props.navigation.navigate('LoginScreen');
     }
+  };
+
+  /**
+   * Resets the list of users if the user has previously searched for a
+   * specific keyword in the search bar and results are filtered.
+   */
+  reset = () => {
+    this.getUsers();
+    this.getFriends();
+    this.removeFriendsFromUsers();
   };
 
   /**
@@ -243,7 +272,7 @@ class FindFriendsScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.getUsers()}>
+                onPress={() => this.reset()}>
                 <Text style={styles.buttonText}>
                   {'Reset'}
                 </Text>
@@ -305,6 +334,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+  },
+  textError: {
+    paddingLeft: 7.5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Colors.error,
   },
   title: {
     padding: 5,

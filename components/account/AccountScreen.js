@@ -24,6 +24,9 @@ class AccountScreen extends Component {
       password: '',
       isLoading: true,
       userInfoData: [],
+      // Error messages for invalid email and password
+      errorMessageEmail: '',
+      errorMessagePassword: '',
     };
   }
 
@@ -116,10 +119,22 @@ class AccountScreen extends Component {
   * to update users information.
   */
   updateUserInfo = async () => {
-    // Validation here
+    this.setState({
+      errorMessageEmail: '',
+      errorMessagePassword: '',
+    });
+    if (!this.state.email.toString().toLowerCase().match(/^\S+@\S+\.\S+$/)) {
+      this.setState({
+        errorMessageEmail: 'Your email address is not valid!',
+      });
+    }
+    if (this.state.password.toString().length < 5) {
+      this.setState({
+        errorMessagePassword: 'Your password must be longer than 5 characters!',
+      });
+    }
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
       method: 'PATCH',
       headers: {
@@ -216,6 +231,12 @@ class AccountScreen extends Component {
               value={this.state.password}
               secureTextEntry
             />
+            <Text style={styles.textError}>
+              {this.state.errorMessageEmail}
+            </Text>
+            <Text style={styles.textError}>
+              {this.state.errorMessagePassword}
+            </Text>
             <TouchableOpacity style={styles.button}
               onPress={() => this.updateUserInfo()}>
               <Text style={styles.buttonText}>Update information</Text>
@@ -251,6 +272,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+  },
+  textError: {
+    paddingLeft: 7.5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Colors.error,
   },
   title: {
     padding: 5,
