@@ -19,7 +19,7 @@ class FriendRequestsScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      listData: [],
+      friendRequestsData: [],
     };
   }
 
@@ -66,7 +66,7 @@ class FriendRequestsScreen extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            friendRequestsData: responseJson,
           });
         })
         .catch((error) =>{
@@ -172,7 +172,7 @@ class FriendRequestsScreen extends Component {
             {'Friend requests'}
           </Text>
           <FlatList style={styles.flatList}
-            data={this.state.listData}
+            data={this.state.friendRequestsData}
             renderItem={({item}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>

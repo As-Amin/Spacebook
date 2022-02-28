@@ -19,7 +19,7 @@ class ViewProfileScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      listData: [],
+      allPostsData: [],
       userId: '', // ID of user whos profile is being displayed
       friendFirstName: 'Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
@@ -87,7 +87,7 @@ class ViewProfileScreen extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            allPostsData: responseJson,
             loggedInAccountUserId: user,
           });
         })
@@ -291,7 +291,7 @@ class ViewProfileScreen extends Component {
             <View style={styles.lineSeperator}></View>
           </View>
           <FlatList style={styles.flatList}
-            data={this.state.listData}
+            data={this.state.allPostsData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>

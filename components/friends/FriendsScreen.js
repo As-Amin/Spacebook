@@ -19,7 +19,7 @@ class FriendsScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      listData: [],
+      userFriendsData: [],
       userToFind: '',
     };
   }
@@ -68,7 +68,7 @@ class FriendsScreen extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            userFriendsData: responseJson,
           });
         })
         .catch((error) =>{
@@ -101,7 +101,7 @@ class FriendsScreen extends Component {
         })
         .then((responseJson) => {
           this.setState({
-            listData: responseJson,
+            userFriendsData: responseJson,
             userToFind: '', // Reset user to find so can search new users
           });
         })
@@ -169,7 +169,7 @@ class FriendsScreen extends Component {
             <View style={styles.lineSeperator}></View>
           </View>
           <FlatList style={styles.flatList}
-            data={this.state.listData}
+            data={this.state.userFriendsData}
             renderItem={({item}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>

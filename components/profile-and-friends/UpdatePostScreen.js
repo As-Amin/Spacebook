@@ -20,7 +20,7 @@ class UpdatePostScreen extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      listData: [],
+      postToUpdateData: [],
       loggedInAccountUserId: '',
       userTextToPost: '',
     };
@@ -71,7 +71,7 @@ class UpdatePostScreen extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            postToUpdateData: responseJson,
             loggedInAccountUserId: user,
           });
         })
@@ -163,17 +163,20 @@ class UpdatePostScreen extends Component {
           <View style={styles.listPost}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
-                {'Post from ' + this.state.listData.author.first_name + ' ' +
-                  this.state.listData.author.last_name + ':'}{'\n'}{'\n'}
+                {'Post from ' + this.state.postToUpdateData.author.first_name +
+                  ' ' + this.state.postToUpdateData.author.last_name + ':'}
+                {'\n'}{'\n'}
               </Text>
               <TextInput style={styles.textInput}
-                placeholder={this.state.listData.text}
+                placeholder={this.state.postToUpdateData.text}
                 onChangeText={(userTextToPost) =>
                   this.setState({userTextToPost})}
                 value={this.state.userTextToPost}/>
               <Text style={styles.boldText}>
-                {'\n'}{new Date(this.state.listData.timestamp).toDateString() +
-                  ' | Likes: ' + this.state.listData.numLikes}{'\n'}{'\n'}
+                {'\n'}{new Date(
+                    this.state.postToUpdateData.timestamp).toDateString() +
+                  ' | Likes: ' + this.state.postToUpdateData.numLikes}
+                {'\n'}{'\n'}
               </Text>
               <View style={styles.flexContainerButtons}>
                 <TouchableOpacity style={styles.button}

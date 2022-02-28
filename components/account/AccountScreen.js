@@ -23,7 +23,7 @@ class AccountScreen extends Component {
       email: '',
       password: '',
       isLoading: true,
-      listData: [],
+      userInfoData: [],
     };
   }
 
@@ -73,7 +73,7 @@ class AccountScreen extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            userInfoData: responseJson,
           });
         })
         .catch((error) =>{
@@ -185,13 +185,13 @@ class AccountScreen extends Component {
           <ScrollView style={styles.scrollView}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
-                {'First name: '}{this.state.listData.first_name}{'\n'}{'\n'}
+                {'First name: '}{this.state.userInfoData.first_name}{'\n'}{'\n'}
               </Text>
               <Text style={styles.boldText}>
-                {'Last name: '}{this.state.listData.last_name}{'\n'}{'\n'}
+                {'Last name: '}{this.state.userInfoData.last_name}{'\n'}{'\n'}
               </Text>
               <Text style={styles.boldText}>
-                {'Email: '}{this.state.listData.email}{'\n'}
+                {'Email: '}{this.state.userInfoData.email}{'\n'}
               </Text>
             </View>
             <View style={styles.lineSeperator}></View>

@@ -19,7 +19,7 @@ class ViewSinglePost extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      listData: [],
+      postToViewData: [],
       loggedInAccountUserId: '',
     };
   }
@@ -69,7 +69,7 @@ class ViewSinglePost extends Component {
         .then((responseJson) => {
           this.setState({
             isLoading: false,
-            listData: responseJson,
+            postToViewData: responseJson,
             loggedInAccountUserId: user,
           });
         })
@@ -118,15 +118,16 @@ class ViewSinglePost extends Component {
           <View style={styles.listPost}>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
-                {'Post from ' + this.state.listData.author.first_name + ' ' +
-                  this.state.listData.author.last_name + ':'} {'\n'}{'\n'}
+                {'Post from ' + this.state.postToViewData.author.first_name +
+                ' ' + this.state.postToViewData.author.last_name + ':'}
+                {'\n'}{'\n'}
               </Text>
               <Text style={styles.text}>
-                {this.state.listData.text} {'\n'}{'\n'}
+                {this.state.postToViewData.text} {'\n'}{'\n'}
               </Text>
               <Text style={styles.boldText}>
-                {new Date(this.state.listData.timestamp).toDateString() +
-                  ' | Likes: ' + this.state.listData.numLikes} {'\n'}
+                {new Date(this.state.postToViewData.timestamp).toDateString() +
+                  ' | Likes: ' + this.state.postToViewData.numLikes} {'\n'}
               </Text>
             </View>
           </View>
