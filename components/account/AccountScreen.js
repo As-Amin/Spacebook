@@ -239,13 +239,17 @@ class AccountScreen extends Component {
             </Text>
             <TouchableOpacity style={styles.button}
               onPress={() => this.updateUserInfo()}>
-              <Text style={styles.buttonText}>Update information</Text>
+              <Text style={styles.buttonText}>
+                {'Update information'}
+              </Text>
             </TouchableOpacity>
             <View style={styles.lineSeperator}></View>
             <TouchableOpacity style={styles.button}
               onPress={() => this.logOut() &&
                       this.props.navigation.navigate('LoginScreen')}>
-              <Text style={styles.buttonText}>Log out</Text>
+              <Text style={styles.buttonText}>
+                {'Log out'}
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
