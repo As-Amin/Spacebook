@@ -19,9 +19,11 @@ class FindFriendsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userToFind: '',
       isLoading: true,
       allUsersData: [],
-      userToFind: '',
+      userFriendsData: [],
+      filteredUsersData: [],
     };
   }
 
@@ -33,6 +35,7 @@ class FindFriendsScreen extends Component {
       this.checkLoggedIn();
     });
     this.getUsers();
+    this.getFriends();
   }
 
   /**
@@ -138,6 +141,59 @@ class FindFriendsScreen extends Component {
   };
 
   /**
+  * Function loading all of the users friends from the server. This is
+  * used to check if a user is already friends with someone and won't display
+  * there name in the find friends screen if so.
+  * @return {fetch} Response from the fetch statement for getting all
+  * friends.
+  */
+  getFriends = async () => {
+    // Store the auth key as a constant - retrieved from async storage
+    const userId = await AsyncStorage.getItem('@user_id');
+    const token = await AsyncStorage.getItem('@session_token');
+    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+      method: 'GET',
+      headers: {
+        'X-Authorization': token, // Assign the auth key to verify account
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('LoginScreen');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseJson) => {
+          this.setState({
+            userFriendsData: responseJson,
+          });
+          this.removeFriendsFromUsers();
+        })
+        .catch((error) =>{
+          console.log(error);
+        });
+  };
+
+  /**
+  * Function which removes all of the users friends list from list
+  * of all users add as friends as they are already friends and this
+  * would lead to errors.
+  */
+  removeFriendsFromUsers = () => {
+    for (let i=0; i<this.state.allUsersData.length; i++) {
+      for (let j=0; j<this.state.userFriendsData.length; j++) {
+        if (parseInt(this.state.allUsersData[i]['user_id']) ===
+        parseInt(this.state.userFriendsData[j]['user_id'])) {
+          this.state.allUsersData.splice(i, 1);
+        }
+      }
+    }
+  };
+
+  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -211,10 +267,6 @@ class FindFriendsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                {
-                // Add a if statement for if user is already friends,
-                // dont display there name
-                }
               </View>
             )}
             keyExtractor={(item, index) => item.user_id.toString()}
