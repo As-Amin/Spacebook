@@ -3,6 +3,9 @@ import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'rea
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Friends screen to display the friends of the user, allowing users
@@ -233,7 +236,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     fontWeight: 'bold',
-    fontSize: '300%',
+    fontSize: '250%',
     color: Colors.text,
   },
   cardBackground: {

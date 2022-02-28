@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     fontWeight: 'bold',
-    fontSize: '300%',
+    fontSize: '250%',
     color: Colors.text,
   },
   cardBackground: {
