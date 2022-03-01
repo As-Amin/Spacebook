@@ -94,6 +94,7 @@ class ViewProfileScreen extends Component {
             allPostsData: responseJson,
             loggedInAccountUserId: user,
           });
+          this.getProfileImage();
         })
         .catch((error) => {
           console.log(error);
@@ -231,18 +232,18 @@ class ViewProfileScreen extends Component {
         });
   };
 
-    /**
+  /**
   * Function retrieving the users profile image from the server so it can
-  * be viewed.
+  * be viewed and updated.
   * @return {fetch} Response from the fetch statement for patch request
   * to get users profile image.
   */
-     getProfileImage = async (userId) => {
-      const token = await AsyncStorage.getItem('@session_token');
-      fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/photo', {
+     getProfileImage = async () => {
+      const value = await AsyncStorage.getItem('@session_token');
+      fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
         method: 'GET',
         headers: {
-          'X-Authorization': token,
+          'X-Authorization': value,
         }
       })
       .then((response) => {
@@ -250,20 +251,21 @@ class ViewProfileScreen extends Component {
           return response.blob();
         } else if (response.status === 401) {
           this.props.navigation.navigate('LoginScreen');
-        } else if (response.status === 404) {
-          throw new Error('Profile image not found');
         } else {
           throw new Error('Something went wrong');
         }
       })
       .then((responseBlob) => {
         let data = URL.createObjectURL(responseBlob);
-        return data;
+        this.setState({
+          photo: data,
+        });
       })
       .catch((error) => {
         console.log(error)
       });
     }
+ 
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -302,6 +304,8 @@ class ViewProfileScreen extends Component {
           <Text style={styles.title}>
             {this.state.friendFirstName}
           </Text>
+          <Image style={styles.profileImage}
+            source={{uri: this.state.photo}}/>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
               placeholder="New post here..."
@@ -333,8 +337,6 @@ class ViewProfileScreen extends Component {
             data={this.state.allPostsData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
-                <Image style={styles.profileImage}
-                  source={{uri: this.getProfileImage(item.author.user_id)}}/>
                 <Text style={styles.boldText}>
                   {'Post from ' + item.author.first_name + ' ' +
                   item.author.last_name + ':'} {'\n'}{'\n'}

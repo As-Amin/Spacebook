@@ -182,14 +182,12 @@ class AccountScreen extends Component {
         return response.blob();
       } else if (response.status === 401) {
         this.props.navigation.navigate('LoginScreen');
-      } else if (response.status === 404) {
-        throw new Error('Profile image not found');
       } else {
         throw new Error('Something went wrong');
       }
     })
-    .then((resBlob) => {
-      let data = URL.createObjectURL(resBlob);
+    .then((responseBlob) => {
+      let data = URL.createObjectURL(responseBlob);
       this.setState({
         photo: data,
       });
@@ -392,6 +390,13 @@ const styles = StyleSheet.create({
     padding: 1,
     borderRadius: 10,
     backgroundColor: Colors.lineBreak,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 400/2,
+    borderWidth: 3,
+    borderColor: Colors.text,
   },
 });
 

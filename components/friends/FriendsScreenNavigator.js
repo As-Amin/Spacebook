@@ -15,7 +15,7 @@ const Stack = createStackNavigator();
 */
 class FriendsScreenNavigator extends Component {
   /**
-  * Renders the stack navgigator for the friends related screens.
+  * Renders the stack navigator for the friends related screens.
   * @return {Stack.Navigator} The stack navigator.
   */
   render() {

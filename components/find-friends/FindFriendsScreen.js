@@ -176,7 +176,6 @@ class FindFriendsScreen extends Component {
           this.setState({
             userFriendsData: responseJson,
           });
-          this.removeFriendsFromUsers();
         })
         .catch((error) =>{
           console.log(error);
