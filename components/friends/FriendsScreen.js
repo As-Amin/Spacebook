@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput, Image} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -24,6 +24,7 @@ class FriendsScreen extends Component {
       isLoading: true,
       userFriendsData: [],
       userToFind: '',
+      photo: '',
     };
   }
 
@@ -73,6 +74,7 @@ class FriendsScreen extends Component {
             isLoading: false,
             userFriendsData: responseJson,
           });
+          this.getProfileImage();
         })
         .catch((error) =>{
           console.log(error);

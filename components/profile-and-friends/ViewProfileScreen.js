@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput, Image} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -27,6 +27,7 @@ class ViewProfileScreen extends Component {
       friendFirstName: 'Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
+      photo: '',
     };
   }
 
@@ -207,9 +208,8 @@ class ViewProfileScreen extends Component {
   * deleting a users post.
   */
   deletePost = async (postId) => {
-    const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/post/' + postId.toString(), {
+    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/post/' + postId.toString(), {
       method: 'DELETE',
       headers: {
         'X-Authorization': token, // Assign the auth key to verify account
@@ -230,6 +230,40 @@ class ViewProfileScreen extends Component {
           console.log(error);
         });
   };
+
+    /**
+  * Function retrieving the users profile image from the server so it can
+  * be viewed.
+  * @return {fetch} Response from the fetch statement for patch request
+  * to get users profile image.
+  */
+     getProfileImage = async (userId) => {
+      const token = await AsyncStorage.getItem('@session_token');
+      fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/photo', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token,
+        }
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.blob();
+        } else if (response.status === 401) {
+          this.props.navigation.navigate('LoginScreen');
+        } else if (response.status === 404) {
+          throw new Error('Profile image not found');
+        } else {
+          throw new Error('Something went wrong');
+        }
+      })
+      .then((responseBlob) => {
+        let data = URL.createObjectURL(responseBlob);
+        return data;
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    }
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -299,6 +333,8 @@ class ViewProfileScreen extends Component {
             data={this.state.allPostsData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
+                <Image style={styles.profileImage}
+                  source={{uri: this.getProfileImage(item.author.user_id)}}/>
                 <Text style={styles.boldText}>
                   {'Post from ' + item.author.first_name + ' ' +
                   item.author.last_name + ':'} {'\n'}{'\n'}
@@ -443,6 +479,13 @@ const styles = StyleSheet.create({
     padding: 1,
     borderRadius: 10,
     backgroundColor: Colors.lineBreak,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 400/2,
+    borderWidth: 3,
+    borderColor: Colors.text,
   },
 });
 

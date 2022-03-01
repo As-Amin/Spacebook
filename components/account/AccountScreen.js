@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput} from 'react-native';
+import {StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Image} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -18,6 +18,7 @@ class AccountScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      photo: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -55,7 +56,6 @@ class AccountScreen extends Component {
     // Store the user id as a constant - retrieved from async storage
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
-
     return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
       method: 'GET',
       headers: {
@@ -78,6 +78,7 @@ class AccountScreen extends Component {
             isLoading: false,
             userInfoData: responseJson,
           });
+          this.getProfileImage();
         })
         .catch((error) =>{
           console.log(error);
@@ -106,7 +107,6 @@ class AccountScreen extends Component {
             throw new Error('Something went wrong');
           }
         })
-        .then((responseJson) => {})
         .catch((error) =>{
           console.log(error);
         });
@@ -160,7 +160,44 @@ class AccountScreen extends Component {
         .catch((error) => {
           console.log(error);
         });
-  };
+  };  
+
+  /**
+  * Function retrieving the users profile image from the server so it can
+  * be viewed and updated.
+  * @return {fetch} Response from the fetch statement for patch request
+  * to get users profile image.
+  */
+  getProfileImage = async () => {
+    const user = await AsyncStorage.getItem('@user_id');
+    const value = await AsyncStorage.getItem('@session_token');
+    fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/photo', {
+      method: 'GET',
+      headers: {
+        'X-Authorization': value,
+      }
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.blob();
+      } else if (response.status === 401) {
+        this.props.navigation.navigate('LoginScreen');
+      } else if (response.status === 404) {
+        throw new Error('Profile image not found');
+      } else {
+        throw new Error('Something went wrong');
+      }
+    })
+    .then((resBlob) => {
+      let data = URL.createObjectURL(resBlob);
+      this.setState({
+        photo: data,
+      });
+    })
+    .catch((error) => {
+      console.log(error)
+    });
+  }
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -198,6 +235,17 @@ class AccountScreen extends Component {
             {'Account'}
           </Text>
           <ScrollView style={styles.scrollView}>
+            <View style={styles.cardBackgroundImage}>
+              <Image style={styles.profileImage}
+                  source={{uri: this.state.photo}}/>
+              <TouchableOpacity style={styles.buttonUpdateImage}
+                onPress={() => this.updateUserInfo()}>
+                <Text style={styles.buttonText}>
+                  {'Change profile picture'}
+                </Text>
+            </TouchableOpacity>
+            </View>
+            <View style={styles.lineSeperator}></View>
             <View style={styles.cardBackground}>
               <Text style={styles.boldText}>
                 {'First name: '}{this.state.userInfoData.first_name}{'\n'}{'\n'}
@@ -213,24 +261,20 @@ class AccountScreen extends Component {
             <TextInput style={styles.textInput}
               placeholder="New first name..."
               onChangeText={(firstName) => this.setState({firstName})}
-              value={this.state.firstName}
-            />
+              value={this.state.firstName}/>
             <TextInput style={styles.textInput}
               placeholder="New last name..."
               onChangeText={(lastName) => this.setState({lastName})}
-              value={this.state.lastName}
-            />
+              value={this.state.lastName}/>
             <TextInput style={styles.textInput}
               placeholder="New email..."
               onChangeText={(email) => this.setState({email})}
-              value={this.state.email}
-            />
+              value={this.state.email}/>
             <TextInput style={styles.textInput}
               placeholder="New password..."
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
-              secureTextEntry
-            />
+              secureTextEntry/>
             <Text style={styles.textError}>
               {this.state.errorMessageEmail}
             </Text>
@@ -298,6 +342,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
+  },
+  cardBackgroundImage: {
+    flexDirection: 'row',
+    margin: 5,
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.lighterBackground,
+  },
+  buttonUpdateImage: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    padding: 7.5,
+    margin: 5,
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    backgroundColor: Colors.theme,
+    color: Colors.text,
   },
   button: {
     padding: 7.5,
