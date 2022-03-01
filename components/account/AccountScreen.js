@@ -237,7 +237,7 @@ class AccountScreen extends Component {
               <Image style={styles.profileImage}
                 source={{uri: this.state.photo}}/>
               <TouchableOpacity style={styles.buttonUpdateImage}
-                onPress={() => this.updateUserInfo()}>
+                onPress={() => this.props.navigation.navigate('CameraScreen')}>
                 <Text style={styles.buttonText}>
                   {'Change profile picture'}
                 </Text>
