@@ -27,7 +27,7 @@ class ViewProfileScreen extends Component {
       friendFirstName: 'Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
-      photo: '',
+      photos: [],
     };
   }
 
@@ -94,7 +94,10 @@ class ViewProfileScreen extends Component {
             allPostsData: responseJson,
             loggedInAccountUserId: user,
           });
-          this.getProfileImage();
+          for (let i=0; i<this.state.allPostsData.length; i++) {
+            const item = responseJson[i];
+            this.getProfileImage(item.author.user_id);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -235,37 +238,37 @@ class ViewProfileScreen extends Component {
   /**
   * Function retrieving the users profile image from the server so it can
   * be viewed and updated.
+  * @param {int} userToGetImageFor The user id for the user to get the profile
+  * image of.
   * @return {fetch} Response from the fetch statement for patch request
   * to get users profile image.
   */
-     getProfileImage = async () => {
-      const value = await AsyncStorage.getItem('@session_token');
-      fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
-        method: 'GET',
-        headers: {
-          'X-Authorization': value,
-        }
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          return response.blob();
-        } else if (response.status === 401) {
-          this.props.navigation.navigate('LoginScreen');
-        } else {
-          throw new Error('Something went wrong');
-        }
-      })
-      .then((responseBlob) => {
-        let data = URL.createObjectURL(responseBlob);
-        this.setState({
-          photo: data,
+  getProfileImage = async (userToGetImageFor) => {
+    let data = '';
+    const value = await AsyncStorage.getItem('@session_token');
+    fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
+      method: 'GET',
+      headers: {
+        'X-Authorization': value,
+      },
+    })
+        .then((response) => {
+          if (response.status === 200) {
+            return response.blob();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('LoginScreen');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseBlob) => {
+          data = URL.createObjectURL(responseBlob);
+          this.setState({photos: [...this.state.photos, data]});
+        })
+        .catch((error) => {
+          console.log(error);
         });
-      })
-      .catch((error) => {
-        console.log(error)
-      });
-    }
- 
+  };
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -304,8 +307,6 @@ class ViewProfileScreen extends Component {
           <Text style={styles.title}>
             {this.state.friendFirstName}
           </Text>
-          <Image style={styles.profileImage}
-            source={{uri: this.state.photo}}/>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
               placeholder="New post here..."
@@ -337,10 +338,14 @@ class ViewProfileScreen extends Component {
             data={this.state.allPostsData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
-                <Text style={styles.boldText}>
-                  {'Post from ' + item.author.first_name + ' ' +
-                  item.author.last_name + ':'} {'\n'}{'\n'}
-                </Text>
+                <View style={styles.backgroundNameImage}>
+                  <Image style={styles.profileImage}
+                    source={{uri: this.state.photos[index]}}/>
+                  <Text style={styles.postFromText}>
+                    {'  Post from ' + item.author.first_name + ' ' +
+                        item.author.last_name + ':'} {'\n'}{'\n'}
+                  </Text>
+                </View>
                 <Text style={styles.text}>
                   {item.text} {'\n'}{'\n'}
                 </Text>
@@ -430,6 +435,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
   },
+  postFromText: {
+    marginTop: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
   boldText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -450,6 +461,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
+  },
+  backgroundNameImage: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
   button: {
     flex: 1,
@@ -483,8 +499,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
   profileImage: {
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
     borderRadius: 400/2,
     borderWidth: 3,
     borderColor: Colors.text,

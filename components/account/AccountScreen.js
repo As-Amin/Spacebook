@@ -160,7 +160,7 @@ class AccountScreen extends Component {
         .catch((error) => {
           console.log(error);
         });
-  };  
+  };
 
   /**
   * Function retrieving the users profile image from the server so it can
@@ -175,27 +175,27 @@ class AccountScreen extends Component {
       method: 'GET',
       headers: {
         'X-Authorization': value,
-      }
+      },
     })
-    .then((response) => {
-      if (response.status === 200) {
-        return response.blob();
-      } else if (response.status === 401) {
-        this.props.navigation.navigate('LoginScreen');
-      } else {
-        throw new Error('Something went wrong');
-      }
-    })
-    .then((responseBlob) => {
-      let data = URL.createObjectURL(responseBlob);
-      this.setState({
-        photo: data,
-      });
-    })
-    .catch((error) => {
-      console.log(error)
-    });
-  }
+        .then((response) => {
+          if (response.status === 200) {
+            return response.blob();
+          } else if (response.status === 401) {
+            this.props.navigation.navigate('LoginScreen');
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then((responseBlob) => {
+          const data = URL.createObjectURL(responseBlob);
+          this.setState({
+            photo: data,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  };
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -235,13 +235,13 @@ class AccountScreen extends Component {
           <ScrollView style={styles.scrollView}>
             <View style={styles.cardBackgroundImage}>
               <Image style={styles.profileImage}
-                  source={{uri: this.state.photo}}/>
+                source={{uri: this.state.photo}}/>
               <TouchableOpacity style={styles.buttonUpdateImage}
                 onPress={() => this.updateUserInfo()}>
                 <Text style={styles.buttonText}>
                   {'Change profile picture'}
                 </Text>
-            </TouchableOpacity>
+              </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
             <View style={styles.cardBackground}>
