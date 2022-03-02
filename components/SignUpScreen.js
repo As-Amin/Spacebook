@@ -24,6 +24,7 @@ class SignUpScreen extends Component {
       // Error messages for invalid email and password
       errorMessageEmail: '',
       errorMessagePassword: '',
+      errorMessageAccountExists: '',
     };
   }
 
@@ -40,11 +41,13 @@ class SignUpScreen extends Component {
       this.setState({
         errorMessageEmail: 'Your email address is not valid!',
       });
+      this.render();
     }
     if (this.state.password.toString().length < 5) {
       this.setState({
         errorMessagePassword: 'Your password must be longer than 5 characters!',
       });
+      this.render();
     }
     return fetch('http://localhost:3333/api/1.0.0/user', {
       method: 'POST',
@@ -62,7 +65,11 @@ class SignUpScreen extends Component {
           if (response.status === 201) {
             return response.json();
           } else if (response.status === 400) {
-            throw new Error('Failed validation');
+            this.setState({
+              errorMessageAccountExists:
+                'This email has already been registered!',
+            });
+            throw new Error('User email is already in the system...');
           } else {
             throw new Error('Something went wrong');
           }
@@ -110,6 +117,9 @@ class SignUpScreen extends Component {
           </Text>
           <Text style={styles.textError}>
             {this.state.errorMessagePassword}
+          </Text>
+          <Text style={styles.textError}>
+            {this.state.errorMessageAccountExists}
           </Text>
           <TouchableOpacity style={styles.button}
             onPress={() => this.signup()}>

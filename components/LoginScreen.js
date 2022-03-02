@@ -41,11 +41,13 @@ class LoginScreen extends Component {
       this.setState({
         errorMessageEmail: 'Your email address is impossible',
       });
+      this.render();
     }
     if (this.state.password.toString().length < 5) {
       this.setState({
         errorMessagePassword: 'Your password must be longer than 5 characters!',
       });
+      this.render();
     }
     return fetch('http://localhost:3333/api/1.0.0/login', {
       method: 'POST',
