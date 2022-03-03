@@ -99,7 +99,7 @@ class CameraScreen extends Component {
             <Camera style={styles.camera} 
               type={this.state.type}
               ref={ref => this.camera = ref}>
-            <View style={styles.flexContainer}>
+            <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
                 onPress={() => {
                   this.takePicture();
@@ -116,7 +116,7 @@ class CameraScreen extends Component {
     else {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.text}>
+          <Text style={styles.boldText}>
             {'No access to camera'}
           </Text>
         </View>
@@ -131,9 +131,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
   },
-  scrollView: {
-    paddingLeft: 5,
-    paddingRight: 5,
+  flexContainerButtons: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   text: {
     fontSize: 16,
@@ -144,12 +145,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
   },
-  textError: {
-    paddingLeft: 7.5,
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: Colors.error,
-  },
   title: {
     padding: 5,
     margin: 5,
@@ -157,33 +152,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     fontSize: '250%',
-    color: Colors.text,
-  },
-  cardBackground: {
-    margin: 5,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    backgroundColor: Colors.lighterBackground,
-  },
-  cardBackgroundImage: {
-    flexDirection: 'row',
-    margin: 5,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    backgroundColor: Colors.lighterBackground,
-  },
-  buttonUpdateImage: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    padding: 7.5,
-    margin: 5,
-    fontSize: 16,
-    borderRadius: 10,
-    borderWidth: 1,
-    backgroundColor: Colors.theme,
     color: Colors.text,
   },
   button: {
@@ -200,28 +168,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
   },
-  textInput: {
-    padding: 5,
-    margin: 5,
-    borderRadius: 10,
-    borderWidth: 1,
-    fontSize: 16,
-    fontWeight: 'bold',
-    backgroundColor: Colors.lighterBackground,
-    color: Colors.text,
-  },
   lineSeperator: {
     margin: 5,
     padding: 1,
     borderRadius: 10,
     backgroundColor: Colors.lineBreak,
   },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 400/2,
-    borderWidth: 3,
-    borderColor: Colors.text,
+  camera: {
+    flex: 1,
   },
 });
 
