@@ -40,8 +40,8 @@ class ViewProfileScreen extends Component {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
       this.getPosts();
+      this.getDraftPosts();
     });
-    this.getDraftPosts();
   }
 
   /**
@@ -276,13 +276,13 @@ class ViewProfileScreen extends Component {
   /**
   * Function saving posts as drafts and storing the posts in async
   * storage to post later. 
+  * @param {String} draftPost The post text to save as a draft in async storage.
   */
   saveAsDraft = async (draftPost) => {
     try {
       // Add the draft to the draft post list
       this.setState({allDraftPosts: [...this.state.allDraftPosts, draftPost]});
       await AsyncStorage.setItem('@draft_posts', JSON.stringify(this.state.allDraftPosts));
-      this.getDraftPosts();
     } catch (error) {
       // Error saving data
       console.log(error);
@@ -294,25 +294,41 @@ class ViewProfileScreen extends Component {
   */
   getDraftPosts = async () => {
     try {
-      await AsyncStorage.getItem('@draft_posts', result);
-      this.setState({allDraftPosts: JSON.parse(result)});
+      let drafts = await AsyncStorage.getItem('@draft_posts');
+      this.setState({allDraftPosts: JSON.parse(drafts)});
     } catch (error) {
-      // Error saving data
+      // Error getting data
       console.log(error);
     }
   }
 
   /**
   * Function deleting draft posts from the draft post array.
+  * @param {String} deleteDraftPost The post text to delete from async storage.
   */
-  deleteDraftPost = async () => {
+  deleteDraftPost = async (draftPostToDelete) => {
     try {
-      await AsyncStorage.getItem('@draft_posts', result);
-      this.setState({allDraftPosts: JSON.parse(result)});
+      for (let i=0; i<this.state.allDraftPosts.length; i++) {
+        const draftFound = this.state.allDraftPosts[i].toString();
+        if (draftPostToDelete === draftFound) {
+          this.state.allDraftPosts.splice(i, 1);
+        }
+      }
+      this.getPosts();
     } catch (error) {
-      // Error saving data
+      // Error deleting data
       console.log(error);
     }
+  }
+
+  /**
+  * Function posting drafts on the profile and deleting the draft post
+  * from the users draft post array.
+  * @param {String} draftPost The post text to post and delete from drafts.
+  */
+  postAndDeleteDraft = (draftPost) => {
+    this.postOnProfile(draftPost);
+    this.deleteDraftPost(draftPost);
   }
 
   /**
@@ -453,18 +469,21 @@ class ViewProfileScreen extends Component {
               data={this.state.allDraftPosts}
               renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
+                <Text style={styles.boldText}>
+                  {'Draft post: '} {'\n'}{'\n'}
+                </Text>
                 <Text style={styles.text}>
-                  {'Draft post: '}{item} {'\n'}{'\n'}
+                  {item} {'\n'}{'\n'}
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.postOnProfile(item)}>
+                    onPress={() => this.postAndDeleteDraft(item)}>
                     <Text style={styles.buttonText}>
                       {'Post the draft'}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.deleteDraftPost(item)}>
                     <Text style={styles.buttonText}>
                       {'Delete draft'}
                     </Text>
