@@ -327,7 +327,7 @@ class ViewProfileScreen extends Component {
   * @param {String} draftPost The post text to post and delete from drafts.
   */
   postAndDeleteDraft = (draftPost) => {
-    this.postOnProfile(draftPost);
+    this.postOnProfile();
     this.deleteDraftPost(draftPost);
   }
 
@@ -472,9 +472,10 @@ class ViewProfileScreen extends Component {
                 <Text style={styles.boldText}>
                   {'Draft post: '} {'\n'}{'\n'}
                 </Text>
-                <Text style={styles.text}>
-                  {item} {'\n'}{'\n'}
-                </Text>
+                <TextInput style={styles.textInput}
+                  placeholder={item}
+                  onChangeText={(userTextToPost) => this.setState({userTextToPost})}
+                  value={this.state.userTextToPost}/>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.postAndDeleteDraft(item)}>
