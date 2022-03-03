@@ -329,7 +329,11 @@ class ViewProfileScreen extends Component {
   * @param {String} draftPost The post text to post and delete from drafts.
   */
   postAndDeleteDraft = (draftPost) => {
-    this.postOnProfile(this.state.draftToPost);
+    if (this.state.draftToPost.length !== 0) {
+      this.postOnProfile(this.state.draftToPost);
+    } else {
+      this.postOnProfile(draftPost);
+    }
     this.deleteDraftPost(draftPost);
   }
 
