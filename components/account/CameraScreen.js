@@ -93,7 +93,7 @@ class CameraScreen extends Component {
   * @return {View} The container for the camera screen.
   */
   render() {
-    if (this.state.hasPermission === 'granted') {
+    if (this.state.hasPermission) {
       return (
         <View style={styles.flexContainer}>
             <Camera style={styles.camera} 

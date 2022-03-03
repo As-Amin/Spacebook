@@ -30,6 +30,7 @@ class ViewProfileScreen extends Component {
       photos: [],
       //Store all of the draft posts
       allDraftPosts: [],
+      draftToPost: '',
     };
   }
 
@@ -40,8 +41,8 @@ class ViewProfileScreen extends Component {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
       this.getPosts();
-      this.getDraftPosts();
     });
+    this.getDraftPosts();
   }
 
   /**
@@ -113,7 +114,7 @@ class ViewProfileScreen extends Component {
   * @return {fetch} Response from the fetch statement for
   * posting a post on the profile.
   */
-  postOnProfile = async () => {
+  postOnProfile = async (textToPost) => {
     const token = await AsyncStorage.getItem('@session_token');
     return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
       method: 'POST',
@@ -122,7 +123,7 @@ class ViewProfileScreen extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: this.state.userTextToPost,
+        text: textToPost,
       }),
     })
         .then((response) => {
@@ -130,6 +131,7 @@ class ViewProfileScreen extends Component {
             this.getPosts();
             this.setState({
               userTextToPost: '', // So user can post again
+              draftToPost: '',
             });
           } else if (response.status === 401) {
             this.props.navigation.navigate('LoginScreen');
@@ -306,7 +308,7 @@ class ViewProfileScreen extends Component {
   * Function deleting draft posts from the draft post array.
   * @param {String} deleteDraftPost The post text to delete from async storage.
   */
-  deleteDraftPost = async (draftPostToDelete) => {
+  deleteDraftPost = (draftPostToDelete) => {
     try {
       for (let i=0; i<this.state.allDraftPosts.length; i++) {
         const draftFound = this.state.allDraftPosts[i].toString();
@@ -327,7 +329,7 @@ class ViewProfileScreen extends Component {
   * @param {String} draftPost The post text to post and delete from drafts.
   */
   postAndDeleteDraft = (draftPost) => {
-    this.postOnProfile();
+    this.postOnProfile(this.state.draftToPost);
     this.deleteDraftPost(draftPost);
   }
 
@@ -375,7 +377,7 @@ class ViewProfileScreen extends Component {
               value={this.state.userTextToPost}/>
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.postOnProfile()}>
+                onPress={() => this.postOnProfile(this.state.userTextToPost)}>
                 <Text style={styles.buttonText}>
                   {'Post'}
                 </Text>
@@ -474,8 +476,8 @@ class ViewProfileScreen extends Component {
                 </Text>
                 <TextInput style={styles.textInput}
                   placeholder={item}
-                  onChangeText={(userTextToPost) => this.setState({userTextToPost})}
-                  value={this.state.userTextToPost}/>
+                  onChangeText={(draftToPost) => this.setState({draftToPost})}
+                  value={this.state.draftToPost}/>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.postAndDeleteDraft(item)}>
