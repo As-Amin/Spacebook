@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Camera} from 'expo-camera';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -93,11 +93,31 @@ class CameraScreen extends Component {
   * @return {View} The container for the camera screen.
   */
   render() {
-    if (this.state.hasPermission) {
+    if (this.state.hasPermission === 'granted') {
       return (
         <View style={styles.flexContainer}>
-          <Text style={styles.title}>
-            {'Camera'}
+            <Camera style={styles.camera} 
+              type={this.state.type}
+              ref={ref => this.camera = ref}>
+            <View style={styles.flexContainer}>
+              <TouchableOpacity style={styles.button}
+                onPress={() => {
+                  this.takePicture();
+                }}>
+                <Text style={styles.text}> 
+                  {'Take Photo'} 
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Camera>
+        </View>
+      );
+    }
+    else {
+      return (
+        <View style={styles.flexContainer}>
+          <Text style={styles.text}>
+            {'No access to camera'}
           </Text>
         </View>
       );
