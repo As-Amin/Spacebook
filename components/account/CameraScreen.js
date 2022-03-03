@@ -34,6 +34,11 @@ class CameraScreen extends Component {
     this.setState({hasPermission: status === 'granted'});
   }
 
+  /**
+  * Function which sends the captured picture to the server and uploads
+  * the image to the users profile image.
+  * @param {Image} data The image file to upload to the users profile picture.
+  */
   sendToServer = async (data) => {
     const user = await AsyncStorage.getItem('@user_id');
     const token = await AsyncStorage.getItem('@session_token');
@@ -64,6 +69,10 @@ class CameraScreen extends Component {
         });
   };
 
+  /**
+  * Function which captures the picture from the camera and configures
+  * the options of the picture such as quality.
+  */
   takePicture = async () => {
     if (this.camera) {
       const options = {
@@ -96,28 +105,27 @@ class CameraScreen extends Component {
     if (this.state.hasPermission) {
       return (
         <View style={styles.flexContainer}>
-            <Camera style={styles.camera} 
-              type={this.state.type}
-              ref={ref => this.camera = ref}>
+          <Camera style={styles.camera}
+            type={this.state.type}
+            ref={(ref) => this.camera = ref}>
             <View style={styles.flexContainerButtons}>
               <TouchableOpacity style={styles.button}
                 onPress={() => {
                   this.takePicture();
                 }}>
-                <Text style={styles.text}> 
-                  {'Take Photo'} 
+                <Text style={styles.text}>
+                  {'Take Photo'}
                 </Text>
               </TouchableOpacity>
             </View>
           </Camera>
         </View>
       );
-    }
-    else {
+    } else {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.boldText}>
-            {'No access to camera'}
+            {'No access to camera.'}
           </Text>
         </View>
       );
@@ -128,13 +136,16 @@ class CameraScreen extends Component {
 const styles = StyleSheet.create({
   flexContainer: {
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'bottom',
+    justifyContent: 'space-between',
   },
   flexContainerButtons: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
   },
   text: {
     fontSize: 16,
