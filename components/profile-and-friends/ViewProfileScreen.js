@@ -28,7 +28,7 @@ class ViewProfileScreen extends Component {
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
       photos: [],
-      //Store all of the draft posts
+      // Store all of the draft posts
       allDraftPosts: [],
       draftToPost: '',
     };
@@ -276,43 +276,45 @@ class ViewProfileScreen extends Component {
   };
 
   /**
+  * Function getting draft posts and storing the posts in an array.
+  */
+  getDraftPosts = async () => {
+    try {
+      const drafts = await AsyncStorage.getItem('@draft_posts');
+      this.setState({allDraftPosts: [JSON.parse(drafts)]});
+    } catch (error) {
+      // Error getting data
+      console.log(error);
+    }
+  };
+
+  /**
   * Function saving posts as drafts and storing the posts in async
-  * storage to post later. 
+  * storage to post later.
   * @param {String} draftPost The post text to save as a draft in async storage.
   */
   saveAsDraft = async (draftPost) => {
     try {
       // Add the draft to the draft post list
       this.setState({allDraftPosts: [...this.state.allDraftPosts, draftPost]});
-      await AsyncStorage.setItem('@draft_posts', JSON.stringify(this.state.allDraftPosts));
+      await AsyncStorage.setItem('@draft_posts',
+          JSON.stringify(this.state.allDraftPosts));
     } catch (error) {
       // Error saving data
       console.log(error);
     }
-  }
-
-  /**
-  * Function getting draft posts and storing the posts in an array.
-  */
-  getDraftPosts = async () => {
-    try {
-      let drafts = await AsyncStorage.getItem('@draft_posts');
-      this.setState({allDraftPosts: JSON.parse(drafts)});
-    } catch (error) {
-      // Error getting data
-      console.log(error);
-    }
-  }
+  };
 
   /**
   * Function deleting draft posts from the draft post array.
-  * @param {String} deleteDraftPost The post text to delete from async storage.
+  * @param {String} draftPostToDelete The post text to delete
+  * from async storage.
   */
   deleteDraftPost = (draftPostToDelete) => {
     try {
       for (let i=0; i<this.state.allDraftPosts.length; i++) {
         const draftFound = this.state.allDraftPosts[i].toString();
-        if (draftPostToDelete === draftFound) {
+        if (draftPostToDelete.toString() === draftFound) {
           this.state.allDraftPosts.splice(i, 1);
         }
       }
@@ -321,7 +323,7 @@ class ViewProfileScreen extends Component {
       // Error deleting data
       console.log(error);
     }
-  }
+  };
 
   /**
   * Function posting drafts on the profile and deleting the draft post
@@ -335,7 +337,7 @@ class ViewProfileScreen extends Component {
       this.postOnProfile(draftPost);
     }
     this.deleteDraftPost(draftPost);
-  }
+  };
 
   /**
   * Function checking if user is logged in and if they arent,
@@ -471,9 +473,9 @@ class ViewProfileScreen extends Component {
               </View>
             )}
             keyExtractor={(item, index) => item.post_id.toString()}/>
-            <FlatList style={styles.flatList}
-              data={this.state.allDraftPosts}
-              renderItem={({item, index}) => (
+          <FlatList style={styles.flatList}
+            data={this.state.allDraftPosts}
+            renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
                   {'Draft post: '} {'\n'}{'\n'}
