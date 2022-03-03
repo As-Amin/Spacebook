@@ -111,6 +111,8 @@ class ViewProfileScreen extends Component {
   /**
   * Function allowing user to post on the profile of the friend or their
   * own profile.
+  * @param {String} textToPost The text that the user wants to post from
+  * the drafts or directly as a new post.
   * @return {fetch} Response from the fetch statement for
   * posting a post on the profile.
   */
@@ -123,7 +125,7 @@ class ViewProfileScreen extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        text: textToPost,
+        text: textToPost.toString(),
       }),
     })
         .then((response) => {
@@ -281,7 +283,7 @@ class ViewProfileScreen extends Component {
   getDraftPosts = async () => {
     try {
       const drafts = await AsyncStorage.getItem('@draft_posts');
-      this.setState({allDraftPosts: [JSON.parse(drafts)]});
+      this.setState({allDraftPosts: JSON.parse(drafts)});
     } catch (error) {
       // Error getting data
       console.log(error);
@@ -295,10 +297,14 @@ class ViewProfileScreen extends Component {
   */
   saveAsDraft = async (draftPost) => {
     try {
-      // Add the draft to the draft post list
-      this.setState({allDraftPosts: [...this.state.allDraftPosts, draftPost]});
-      await AsyncStorage.setItem('@draft_posts',
-          JSON.stringify(this.state.allDraftPosts));
+      // Check if the post is bigger than 0
+      if (draftPost.toString().length > 0) {
+        // Add the draft to the draft post list
+        this.setState({allDraftPosts:
+          [...this.state.allDraftPosts, draftPost]});
+        await AsyncStorage.setItem('@draft_posts',
+            JSON.stringify(this.state.allDraftPosts));
+      }
     } catch (error) {
       // Error saving data
       console.log(error);
@@ -394,12 +400,6 @@ class ViewProfileScreen extends Component {
                   {'Save as draft'}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.componentDidMount()}>
-                <Text style={styles.buttonText}>
-                  {'Refresh'}
-                </Text>
-              </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
           </View>
@@ -472,32 +472,39 @@ class ViewProfileScreen extends Component {
                 </View>
               </View>
             )}
-            keyExtractor={(item, index) => item.post_id.toString()}/>
+          />
           <FlatList style={styles.flatList}
             data={this.state.allDraftPosts}
             renderItem={({item, index}) => (
-              <View style={styles.cardBackground}>
-                <Text style={styles.boldText}>
-                  {'Draft post: '} {'\n'}{'\n'}
-                </Text>
-                <TextInput style={styles.textInput}
-                  placeholder={item}
-                  onChangeText={(draftToPost) => this.setState({draftToPost})}
-                  value={this.state.draftToPost}/>
-                <View style={styles.flexContainerButtons}>
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => this.postAndDeleteDraft(item)}>
-                    <Text style={styles.buttonText}>
-                      {'Post the draft'}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button}
-                    onPress={() => this.deleteDraftPost(item)}>
-                    <Text style={styles.buttonText}>
-                      {'Delete draft'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+              <View>
+                {item.toString().length > 0 ? // For drafts to work
+                  // there the array of drafts contains an empty post,
+                  // this if statement removes that post from view
+                    <>
+                      <View style={styles.cardBackground}>
+                        <Text style={styles.boldText}>
+                          {'Draft post: '} {'\n'}
+                        </Text><TextInput style={styles.textInput}
+                          placeholder={item}
+                          onChangeText={(draftToPost) =>
+                            this.setState({draftToPost})}
+                          value={this.state.draftToPost} />
+                        <View style={styles.flexContainerButtons}>
+                          <TouchableOpacity style={styles.button}
+                            onPress={() => this.postAndDeleteDraft(item)}>
+                            <Text style={styles.buttonText}>
+                              {'Post the draft'}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={styles.button}
+                            onPress={() => this.deleteDraftPost(item)}>
+                            <Text style={styles.buttonText}>
+                              {'Delete draft'}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View></> :
+                    <></> }
               </View>
             )}
           />
