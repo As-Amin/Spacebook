@@ -28,6 +28,8 @@ class ViewProfileScreen extends Component {
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
       photos: [],
+      //Store all of the draft posts
+      allDraftPosts: [],
     };
   }
 
@@ -37,8 +39,9 @@ class ViewProfileScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
+      this.getPosts();
     });
-    this.getPosts();
+    this.getDraftPosts();
   }
 
   /**
@@ -271,6 +274,48 @@ class ViewProfileScreen extends Component {
   };
 
   /**
+  * Function saving posts as drafts and storing the posts in async
+  * storage to post later. 
+  */
+  saveAsDraft = async (draftPost) => {
+    try {
+      // Add the draft to the draft post list
+      this.setState({allDraftPosts: [...this.state.allDraftPosts, draftPost]});
+      await AsyncStorage.setItem('@draft_posts', JSON.stringify(this.state.allDraftPosts));
+      this.getDraftPosts();
+    } catch (error) {
+      // Error saving data
+      console.log(error);
+    }
+  }
+
+  /**
+  * Function getting draft posts and storing the posts in an array.
+  */
+  getDraftPosts = async () => {
+    try {
+      await AsyncStorage.getItem('@draft_posts', result);
+      this.setState({allDraftPosts: JSON.parse(result)});
+    } catch (error) {
+      // Error saving data
+      console.log(error);
+    }
+  }
+
+  /**
+  * Function deleting draft posts from the draft post array.
+  */
+  deleteDraftPost = async () => {
+    try {
+      await AsyncStorage.getItem('@draft_posts', result);
+      this.setState({allDraftPosts: JSON.parse(result)});
+    } catch (error) {
+      // Error saving data
+      console.log(error);
+    }
+  }
+
+  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -320,7 +365,7 @@ class ViewProfileScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
-                onPress={() => console.log('worked')}>
+                onPress={() => this.saveAsDraft(this.state.userTextToPost)}>
                 <Text style={styles.buttonText}>
                   {'Save as draft'}
                 </Text>
@@ -403,7 +448,30 @@ class ViewProfileScreen extends Component {
                 </View>
               </View>
             )}
-            keyExtractor={(item, index) => item.post_id.toString()}
+            keyExtractor={(item, index) => item.post_id.toString()}/>
+            <FlatList style={styles.flatList}
+              data={this.state.allDraftPosts}
+              renderItem={({item, index}) => (
+              <View style={styles.cardBackground}>
+                <Text style={styles.text}>
+                  {'Draft post: '}{item} {'\n'}{'\n'}
+                </Text>
+                <View style={styles.flexContainerButtons}>
+                  <TouchableOpacity style={styles.button}
+                    onPress={() => this.postOnProfile(item)}>
+                    <Text style={styles.buttonText}>
+                      {'Post the draft'}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button}
+                    onPress={() => console.log('worked')}>
+                    <Text style={styles.buttonText}>
+                      {'Delete draft'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           />
         </View>
       );
