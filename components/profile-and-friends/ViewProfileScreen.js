@@ -24,7 +24,7 @@ class ViewProfileScreen extends Component {
       isLoading: true,
       allPostsData: [],
       userId: '', // ID of user whos profile is being displayed
-      friendFirstName: 'Profile', // Whos profile it is, to display at top
+      friendFirstName: 'My Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
       photo: '',
@@ -46,7 +46,6 @@ class ViewProfileScreen extends Component {
       this.getPosts();
     });
     this.getDraftPosts();
-    this.getProfileImage();
   }
 
   /**
@@ -106,6 +105,7 @@ class ViewProfileScreen extends Component {
               allPostsData: responseJson,
               loggedInAccountUserId: user,
             });
+            this.getProfileImages();
           })
           .catch((error) => {
             console.log(error);
@@ -284,7 +284,7 @@ class ViewProfileScreen extends Component {
   * @return {fetch} Response from the fetch statement for patch request
   * to get users profile image.
   */
-  getProfileImage = async () => {
+  getProfileImages = async () => {
     try {
       const value = await AsyncStorage.getItem('@session_token');
       fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
@@ -480,7 +480,8 @@ class ViewProfileScreen extends Component {
                 <View style={styles.cardBackground}>
                   <Text style={styles.boldText}>
                     {'Draft post: '} {'\n'}
-                  </Text><TextInput style={styles.textInput}
+                  </Text>
+                  <TextInput style={styles.textInputDraft}
                     placeholder={item}
                     onChangeText={(draftToPost) =>
                       this.setState({draftToPost})}
@@ -489,13 +490,19 @@ class ViewProfileScreen extends Component {
                     <TouchableOpacity style={styles.button}
                       onPress={() => this.postAndDeleteDraft(item)}>
                       <Text style={styles.buttonText}>
-                        {'Post the draft'}
+                        {'Post'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}
+                      onPress={() => console.log('worked')}>
+                      <Text style={styles.buttonText}>
+                        {'Schedule'}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button}
                       onPress={() => this.deleteDraftPost(item)}>
                       <Text style={styles.buttonText}>
-                        {'Delete draft'}
+                        {'Delete'}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -517,8 +524,10 @@ class ViewProfileScreen extends Component {
                   {item.text} {'\n'}{'\n'}
                 </Text>
                 <Text style={styles.boldText}>
-                  {new Date(item.timestamp).toDateString() +
-                  ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
+                  {new Date(item.timestamp).getHours() + ':' +
+                    new Date(item.timestamp).getMinutes() +
+                    ' | ' + new Date(item.timestamp).toDateString() +
+                    ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
                 </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
@@ -645,6 +654,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     backgroundColor: Colors.lighterBackground,
+    color: Colors.text,
+  },
+  textInputDraft: {
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.darkerBackground,
     color: Colors.text,
   },
   lineSeperator: {
