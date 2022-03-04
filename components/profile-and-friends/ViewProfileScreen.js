@@ -99,8 +99,7 @@ class ViewProfileScreen extends Component {
             loggedInAccountUserId: user,
           });
           for (let i=0; i<this.state.allPostsData.length; i++) {
-            const item = responseJson[i];
-            this.getProfileImage(item.author.user_id);
+            this.getProfileImage(this.state.allPostsData[i].author.user_id);
           }
         })
         .catch((error) => {
@@ -251,7 +250,6 @@ class ViewProfileScreen extends Component {
   * to get users profile image.
   */
   getProfileImage = async (userToGetImageFor) => {
-    let data = '';
     const value = await AsyncStorage.getItem('@session_token');
     fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
       method: 'GET',
@@ -269,8 +267,9 @@ class ViewProfileScreen extends Component {
           }
         })
         .then((responseBlob) => {
-          data = URL.createObjectURL(responseBlob);
-          this.setState({photos: [...this.state.photos, data]});
+          const data = URL.createObjectURL(responseBlob);
+          this.setState({photos: [...this.state.photos, data.toString()]});
+          console.log(userToGetImageFor + data);
         })
         .catch((error) => {
           console.log(error);
