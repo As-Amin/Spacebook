@@ -37,8 +37,8 @@ class AccountScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
+      this.getUserInfo();
     });
-    this.getUserInfo();
   }
 
   /**
