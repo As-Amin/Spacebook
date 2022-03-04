@@ -33,6 +33,7 @@ class ViewProfileScreen extends Component {
       draftToPost: '',
       // Whether to display drafts or not
       renderDrafts: false,
+      renderDraftsButtonText: 'View drafts',
     };
   }
 
@@ -293,13 +294,14 @@ class ViewProfileScreen extends Component {
   */
   saveAsDraft = async (draftPost) => {
     try {
-      // Check if the post is bigger than 0
+      // Check if the post length is bigger than 0
       if (draftPost.toString().length > 0) {
         // Add the draft to the draft post list
         this.setState({allDraftPosts:
           [...this.state.allDraftPosts, draftPost]});
         await AsyncStorage.setItem('@draft_posts',
             JSON.stringify(this.state.allDraftPosts));
+        this.setState({userTextToPost: ''});
       }
     } catch (error) {
       // Error saving data
@@ -349,10 +351,12 @@ class ViewProfileScreen extends Component {
     if (this.state.renderDrafts === true) {
       this.setState({
         renderDrafts: false,
+        renderDraftsButtonText: 'View drafts',
       });
     } else if (this.state.renderDrafts === false) {
       this.setState({
         renderDrafts: true,
+        renderDraftsButtonText: 'Collapse drafts',
       });
     }
   };
@@ -409,12 +413,6 @@ class ViewProfileScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.toggleRenderDrafts()}>
-                <Text style={styles.buttonText}>
-                  {'View drafts'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}
                 onPress={() => this.saveAsDraft(this.state.userTextToPost)}>
                 <Text style={styles.buttonText}>
                   {'Save as draft'}
@@ -422,7 +420,47 @@ class ViewProfileScreen extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
+            <View style={styles.flexContainerButtons}>
+              <TouchableOpacity style={styles.button}
+                onPress={() => this.toggleRenderDrafts()}>
+                <Text style={styles.buttonText}>
+                  {this.state.renderDraftsButtonText}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
+          {this.state.renderDrafts === true ?
+            <FlatList style={styles.flatList}
+              data={this.state.allDraftPosts}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({item, index}) => (
+                <View style={styles.cardBackground}>
+                  <Text style={styles.boldText}>
+                    {'Draft post: '} {'\n'}
+                  </Text><TextInput style={styles.textInput}
+                    placeholder={item}
+                    onChangeText={(draftToPost) =>
+                      this.setState({draftToPost})}
+                    value={this.state.draftToPost} />
+                  <View style={styles.flexContainerButtons}>
+                    <TouchableOpacity style={styles.button}
+                      onPress={() => this.postAndDeleteDraft(item)}>
+                      <Text style={styles.buttonText}>
+                        {'Post the draft'}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}
+                      onPress={() => this.deleteDraftPost(item)}>
+                      <Text style={styles.buttonText}>
+                        {'Delete draft'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            /> :
+            <></> }
+          <View style={styles.lineSeperator}></View>
           <FlatList style={styles.flatList}
             data={this.state.allPostsData}
             keyExtractor={(item, index) => item.post_id.toString()}
@@ -487,43 +525,6 @@ class ViewProfileScreen extends Component {
                       </Text>
                     </TouchableOpacity></> }
                 </View>
-              </View>
-            )}
-          />
-          <FlatList style={styles.flatList}
-            data={this.state.allDraftPosts}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({item, index}) => (
-              <View>
-                {item.toString().length > 0 &&
-                  this.state.renderDrafts === true ? // For drafts to work
-                  // there the array of drafts contains an empty post,
-                  // this if statement removes that post from view
-                    <>
-                      <View style={styles.cardBackground}>
-                        <Text style={styles.boldText}>
-                          {'Draft post: '} {'\n'}
-                        </Text><TextInput style={styles.textInput}
-                          placeholder={item}
-                          onChangeText={(draftToPost) =>
-                            this.setState({draftToPost})}
-                          value={this.state.draftToPost} />
-                        <View style={styles.flexContainerButtons}>
-                          <TouchableOpacity style={styles.button}
-                            onPress={() => this.postAndDeleteDraft(item)}>
-                            <Text style={styles.buttonText}>
-                              {'Post the draft'}
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={styles.button}
-                            onPress={() => this.deleteDraftPost(item)}>
-                            <Text style={styles.buttonText}>
-                              {'Delete draft'}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View></> :
-                    <></> }
               </View>
             )}
           />
@@ -610,7 +611,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
   profileImage: {
-    marginLeft: '50%',
+    marginLeft: '55%',
     width: 40,
     height: 40,
     borderRadius: 400/2,

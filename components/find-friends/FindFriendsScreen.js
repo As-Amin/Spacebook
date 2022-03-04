@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput, Image} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -36,9 +36,9 @@ class FindFriendsScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
+      this.getUsers();
+      this.getFriends();
     });
-    this.getUsers();
-    this.getFriends();
   }
 
   /**
