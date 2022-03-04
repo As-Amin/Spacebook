@@ -4,4 +4,4 @@ A mobile application 'Facebook' clone for astronauts in space, using the React N
 ## Style Guide
 Uses the Google JavaScript Style Guide, with ESLint.
 
-Link to repository: https://github.com/As-Amin/spacebook
+Link to the Spacebook repository: https://github.com/As-Amin/spacebook
