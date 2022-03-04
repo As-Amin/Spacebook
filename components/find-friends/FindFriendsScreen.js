@@ -189,41 +189,6 @@ class FindFriendsScreen extends Component {
   };
 
   /**
-  * Function retrieving the users profile image from the server so it can
-  * be viewed and updated.
-  * @param {int} userToGetImageFor The user id for the user to get the profile
-  * image of.
-  * @return {fetch} Response from the fetch statement for patch request
-  * to get users profile image.
-  */
-  getProfileImage = async (userToGetImageFor) => {
-    let data = '';
-    const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': value,
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.blob();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseBlob) => {
-          data = URL.createObjectURL(responseBlob);
-          this.setState({photos: [...this.state.photos, data]});
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-  };
-
-  /**
   * Function which removes all of the users friends list aswell as
   * the user from list of all users add as friends as they are
   * already friends and they cannot add themselves, and this
@@ -325,14 +290,10 @@ class FindFriendsScreen extends Component {
             data={this.state.allUsersData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
-                <View style={styles.backgroundNameImage}>
-                  <Image style={styles.profileImage}
-                    source={{uri: this.state.photos[index]}}/>
-                  <Text style={styles.usernameText}>
-                    {'  Username: ' + item.user_givenname + ' ' +
+                <Text style={styles.boldText}>
+                  {'Username: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
-                  </Text>
-                </View>
+                </Text>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.addFriend(item.user_id)}>
@@ -402,11 +363,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
   },
-  backgroundNameImage: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },
   button: {
     flex: 1,
     padding: 7.5,
@@ -437,19 +393,6 @@ const styles = StyleSheet.create({
     padding: 1,
     borderRadius: 10,
     backgroundColor: Colors.lineBreak,
-  },
-  profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 400/2,
-    borderWidth: 3,
-    borderColor: Colors.text,
-  },
-  usernameText: {
-    marginTop: 5,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text,
   },
 });
 

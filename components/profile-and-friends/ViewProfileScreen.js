@@ -27,10 +27,12 @@ class ViewProfileScreen extends Component {
       friendFirstName: 'Profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
-      photos: [],
+      photo: '',
       // Store all of the draft posts
       allDraftPosts: [],
       draftToPost: '',
+      // Whether to display drafts or not
+      renderDrafts: false,
     };
   }
 
@@ -98,9 +100,7 @@ class ViewProfileScreen extends Component {
             allPostsData: responseJson,
             loggedInAccountUserId: user,
           });
-          for (let i=0; i<this.state.allPostsData.length; i++) {
-            this.getProfileImage(this.state.allPostsData[i].author.user_id);
-          }
+          this.getProfileImage();
         })
         .catch((error) => {
           console.log(error);
@@ -244,14 +244,12 @@ class ViewProfileScreen extends Component {
   /**
   * Function retrieving the users profile image from the server so it can
   * be viewed and updated.
-  * @param {int} userToGetImageFor The user id for the user to get the profile
-  * image of.
   * @return {fetch} Response from the fetch statement for patch request
   * to get users profile image.
   */
-  getProfileImage = async (userToGetImageFor) => {
+  getProfileImage = async () => {
     const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
+    fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
       method: 'GET',
       headers: {
         'X-Authorization': value,
@@ -268,8 +266,7 @@ class ViewProfileScreen extends Component {
         })
         .then((responseBlob) => {
           const data = URL.createObjectURL(responseBlob);
-          this.setState({photos: [...this.state.photos, data.toString()]});
-          console.log(userToGetImageFor + data);
+          this.setState({photo: data.toString()});
         })
         .catch((error) => {
           console.log(error);
@@ -345,6 +342,22 @@ class ViewProfileScreen extends Component {
   };
 
   /**
+  * Function which toggles the boolean to render drafts on the click of
+  * a button.
+  */
+  toggleRenderDrafts = () => {
+    if (this.state.renderDrafts === true) {
+      this.setState({
+        renderDrafts: false,
+      });
+    } else if (this.state.renderDrafts === false) {
+      this.setState({
+        renderDrafts: true,
+      });
+    }
+  };
+
+  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -380,6 +393,8 @@ class ViewProfileScreen extends Component {
         <View style={styles.flexContainer}>
           <Text style={styles.title}>
             {this.state.friendFirstName}
+            <Image style={styles.profileImage}
+              source={{uri: this.state.photo}}/>
           </Text>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
@@ -394,6 +409,12 @@ class ViewProfileScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
+                onPress={() => this.toggleRenderDrafts()}>
+                <Text style={styles.buttonText}>
+                  {'View drafts'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button}
                 onPress={() => this.saveAsDraft(this.state.userTextToPost)}>
                 <Text style={styles.buttonText}>
                   {'Save as draft'}
@@ -404,16 +425,13 @@ class ViewProfileScreen extends Component {
           </View>
           <FlatList style={styles.flatList}
             data={this.state.allPostsData}
+            keyExtractor={(item, index) => item.post_id.toString()}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
-                <View style={styles.backgroundNameImage}>
-                  <Image style={styles.profileImage}
-                    source={{uri: this.state.photos[index]}}/>
-                  <Text style={styles.postFromText}>
-                    {'  Post from ' + item.author.first_name + ' ' +
+                <Text style={styles.boldText}>
+                  {'Post from ' + item.author.first_name + ' ' +
                         item.author.last_name + ':'} {'\n'}{'\n'}
-                  </Text>
-                </View>
+                </Text>
                 <Text style={styles.text}>
                   {item.text} {'\n'}{'\n'}
                 </Text>
@@ -474,9 +492,11 @@ class ViewProfileScreen extends Component {
           />
           <FlatList style={styles.flatList}
             data={this.state.allDraftPosts}
+            keyExtractor={(item, index) => item + index}
             renderItem={({item, index}) => (
               <View>
-                {item.toString().length > 0 ? // For drafts to work
+                {item.toString().length > 0 &&
+                  this.state.renderDrafts === true ? // For drafts to work
                   // there the array of drafts contains an empty post,
                   // this if statement removes that post from view
                     <>
@@ -537,12 +557,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
   },
-  postFromText: {
-    marginTop: 5,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
   boldText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -563,11 +577,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     backgroundColor: Colors.lighterBackground,
-  },
-  backgroundNameImage: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'stretch',
   },
   button: {
     flex: 1,
@@ -601,8 +610,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
   profileImage: {
-    width: 30,
-    height: 30,
+    marginLeft: '50%',
+    width: 40,
+    height: 40,
     borderRadius: 400/2,
     borderWidth: 3,
     borderColor: Colors.text,
