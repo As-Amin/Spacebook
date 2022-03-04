@@ -4,6 +4,9 @@ import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
 import 'react-native-gesture-handler';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Update post screen to display the single post to update, allowing user
@@ -49,35 +52,42 @@ class UpdatePostScreen extends Component {
   * the single post.
   */
   getSinglePost = async () => {
-    const user = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('Can only view posts of yourself or friends');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            postToUpdateData: responseJson,
-            loggedInAccountUserId: user,
+    try {
+      const user = await AsyncStorage.getItem('@user_id');
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('Can only view posts of yourself or friends');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              postToUpdateData: responseJson,
+              loggedInAccountUserId: user,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -86,44 +96,51 @@ class UpdatePostScreen extends Component {
   * @return {fetch} Response from the fetch statement for updating the post.
   */
   updatePost = async () => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
-      method: 'PATCH',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: this.state.userTextToPost,
-      }),
-    })
-        .then((response) => {
-          if (response.status === 200) {
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.props.route.params.userId + '/post/' + this.props.route.params.postId, {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: this.state.userTextToPost,
+        }),
+      })
+          .then((response) => {
+            if (response.status === 200) {
             // If the friends first name is passed in, go to the friends screen,
             // or if the first first name hasn't changed from 'profile' go back
             // to profile screen
-            if (this.props.route.params.friendFirstName === 'Profile') {
-              this.props.navigation.navigate('ProfileScreen');
+              if (this.props.route.params.friendFirstName === 'Profile') {
+                this.props.navigation.navigate('ProfileScreen');
+              } else {
+                this.props.navigation.navigate('FriendsScreen');
+              }
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('You can only update your own posts');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
             } else {
-              this.props.navigation.navigate('FriendsScreen');
+              throw new Error('Something went wrong');
             }
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('You can only update your own posts');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then(() => {
-          this.setState({
-            userTextToPost: '',
+          })
+          .then(() => {
+            this.setState({
+              userTextToPost: '',
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

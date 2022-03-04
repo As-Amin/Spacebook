@@ -3,6 +3,9 @@ import {StyleSheet, View, Text, FlatList, TouchableOpacity, Image} from 'react-n
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Friend requests screen to display the friend requests of the user,
@@ -48,36 +51,43 @@ class FriendRequestsScreen extends Component {
   * friend requests.
   */
   getFriendRequests = async () => {
+    try {
     // Store the auth key as a constant - retrieved from async storage
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/friendrequests', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            friendRequestsData: responseJson,
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/friendrequests', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              friendRequestsData: responseJson,
+            });
+            for (let i=0; i<this.state.friendRequestsData.length; i++) {
+              const item = responseJson[i];
+              this.getProfileImage(item.user_id);
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
           });
-          for (let i=0; i<this.state.friendRequestsData.length; i++) {
-            const item = responseJson[i];
-            this.getProfileImage(item.user_id);
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -88,26 +98,33 @@ class FriendRequestsScreen extends Component {
   * request.
   */
   acceptFriendRequest = async (userId) => {
+    try {
     // Store the auth key as a constant - retrieved from async storage
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
-      method: 'POST',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.getFriendRequests();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
+        method: 'POST',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getFriendRequests();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -118,26 +135,33 @@ class FriendRequestsScreen extends Component {
   * request.
   */
   rejectFriendRequest = async (userId) => {
+    try {
     // Store the auth key as a constant - retrieved from async storage
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
-      method: 'DELETE',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.getFriendRequests();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/friendrequests/' + userId.toString(), {
+        method: 'DELETE',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getFriendRequests();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -149,30 +173,37 @@ class FriendRequestsScreen extends Component {
   * to get users profile image.
   */
   getProfileImage = async (userToGetImageFor) => {
-    let data = '';
-    const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': value,
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.blob();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseBlob) => {
-          data = URL.createObjectURL(responseBlob);
-          this.setState({photos: [...this.state.photos, data]});
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      let data = '';
+      const value = await AsyncStorage.getItem('@session_token');
+      fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': value,
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.blob();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseBlob) => {
+            data = URL.createObjectURL(responseBlob);
+            this.setState({photos: [...this.state.photos, data]});
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

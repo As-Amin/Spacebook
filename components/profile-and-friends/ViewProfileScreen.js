@@ -46,6 +46,7 @@ class ViewProfileScreen extends Component {
       this.getPosts();
     });
     this.getDraftPosts();
+    this.getProfileImage();
   }
 
   /**
@@ -61,51 +62,58 @@ class ViewProfileScreen extends Component {
   * the posts.
   */
   getPosts = async () => {
-    // Store the user id as a constant - retrieved from async storage
-    const user = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    // Check if to view friends posts or users posts
     try {
-      if (this.props.route.params.friendId.toString() !== user.toString()) {
+    // Store the user id as a constant - retrieved from async storage
+      const user = await AsyncStorage.getItem('@user_id');
+      const token = await AsyncStorage.getItem('@session_token');
+      // Check if to view friends posts or users posts
+      try {
+        if (this.props.route.params.friendId.toString() !== user.toString()) {
+          this.setState({
+            userId: this.props.route.params.friendId.toString(),
+            friendFirstName:
+              this.props.route.params.friendFirstName.toString() +
+              '\'s profile',
+          });
+        }
+      } catch (error) {
         this.setState({
-          userId: this.props.route.params.friendId.toString(),
-          friendFirstName: this.props.route.params.friendFirstName.toString() +
-            '\'s profile',
+          userId: user.toString(),
         });
       }
-    } catch (error) {
-      this.setState({
-        userId: user.toString(),
-      });
-    }
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('Can only view posts of yourself or friends');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            allPostsData: responseJson,
-            loggedInAccountUserId: user,
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('Can only view posts of yourself or friends');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              allPostsData: responseJson,
+              loggedInAccountUserId: user,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          this.getProfileImage();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -117,35 +125,42 @@ class ViewProfileScreen extends Component {
   * posting a post on the profile.
   */
   postOnProfile = async (textToPost) => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
-      method: 'POST',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: textToPost.toString(),
-      }),
-    })
-        .then((response) => {
-          if (response.status === 201) {
-            this.getPosts();
-            this.setState({
-              userTextToPost: '', // So user can post again
-              draftToPost: '',
-            });
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 404) {
-            throw new Error('Post not found!');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post', {
+        method: 'POST',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: textToPost.toString(),
+        }),
+      })
+          .then((response) => {
+            if (response.status === 201) {
+              this.getPosts();
+              this.setState({
+                userTextToPost: '', // So user can post again
+                draftToPost: '',
+              });
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 404) {
+              throw new Error('Post not found!');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -156,28 +171,35 @@ class ViewProfileScreen extends Component {
   * liking a users post.
   */
   likePost = async (postId) => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post/' + postId.toString() + '/like', {
-      method: 'POST', // POST request as sending request to like post
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.getPosts();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('You have already liked this post!');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) => {
-          toast.error('You have already liked this post!');
-          console.log(error);
-        });
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post/' + postId.toString() + '/like', {
+        method: 'POST', // POST request as sending request to like post
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getPosts();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('You have already liked this post!');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) => {
+            toast.error('You have already liked this post!');
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -188,28 +210,35 @@ class ViewProfileScreen extends Component {
   * disliking a users post.
   */
   dislikePost = async (postId) => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post/' + postId.toString() + '/like', {
-      method: 'DELETE', // DELETE request as sending request to dislike post
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.getPosts();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('You have not liked this post!');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) => {
-          toast.error('You have not liked this post!');
-          console.log(error);
-        });
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId + '/post/' + postId.toString() + '/like', {
+        method: 'DELETE', // DELETE request as sending request to dislike post
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getPosts();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('You have not liked this post!');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) => {
+            toast.error('You have not liked this post!');
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -219,27 +248,34 @@ class ViewProfileScreen extends Component {
   * deleting a users post.
   */
   deletePost = async (postId) => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/post/' + postId.toString(), {
-      method: 'DELETE',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.getPosts();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            throw new Error('You can only delete your own posts!');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/post/' + postId.toString(), {
+        method: 'DELETE',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.getPosts();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              throw new Error('You can only delete your own posts!');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -249,29 +285,36 @@ class ViewProfileScreen extends Component {
   * to get users profile image.
   */
   getProfileImage = async () => {
-    const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': value,
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.blob();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseBlob) => {
-          const data = URL.createObjectURL(responseBlob);
-          this.setState({photo: data.toString()});
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      const value = await AsyncStorage.getItem('@session_token');
+      fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': value,
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.blob();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseBlob) => {
+            const data = URL.createObjectURL(responseBlob);
+            this.setState({photo: data.toString()});
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

@@ -51,37 +51,44 @@ class FriendsScreen extends Component {
   * friends.
   */
   getFriends = async () => {
+    try {
     // Store the auth key as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            userFriendsData: responseJson,
+      const userId = await AsyncStorage.getItem('@user_id');
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              userFriendsData: responseJson,
+            });
+            for (let i=0; i<this.state.userFriendsData.length; i++) {
+              const item = responseJson[i];
+              this.getProfileImage(item.user_id);
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
           });
-          for (let i=0; i<this.state.userFriendsData.length; i++) {
-            const item = responseJson[i];
-            this.getProfileImage(item.user_id);
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -91,31 +98,38 @@ class FriendsScreen extends Component {
   * friends.
   */
   findUser = async () => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20&search_in=friends', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            userFriendsData: responseJson,
-            userToFind: '', // Reset user to find so can search new users
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20&search_in=friends', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              userFriendsData: responseJson,
+              userToFind: '', // Reset user to find so can search new users
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -127,30 +141,37 @@ class FriendsScreen extends Component {
   * to get users profile image.
   */
   getProfileImage = async (userToGetImageFor) => {
-    let data = '';
-    const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': value,
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.blob();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseBlob) => {
-          data = URL.createObjectURL(responseBlob);
-          this.setState({photos: [...this.state.photos, data]});
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      let data = '';
+      const value = await AsyncStorage.getItem('@session_token');
+      fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': value,
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.blob();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseBlob) => {
+            data = URL.createObjectURL(responseBlob);
+            this.setState({photos: [...this.state.photos, data]});
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

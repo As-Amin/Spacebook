@@ -4,6 +4,9 @@ import {Camera} from 'expo-camera';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Camera screen class allowing users to take pictures using the
@@ -44,29 +47,36 @@ class CameraScreen extends Component {
     const token = await AsyncStorage.getItem('@session_token');
     const res = await fetch(data.base64);
     const blob = await res.blob();
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/photo', {
-      method: 'POST',
-      headers: {
-        'X-Authorization': token,
-        'Content-Type': 'image/png',
-      },
-      body: blob,
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            console.log('Picture added', response);
-            this.props.navigation.navigate('AccountScreen');
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 404) {
-            throw new Error('Not found...');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/photo', {
+        method: 'POST',
+        headers: {
+          'X-Authorization': token,
+          'Content-Type': 'image/png',
+        },
+        body: blob,
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              console.log('Picture added', response);
+              this.props.navigation.navigate('AccountScreen');
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 404) {
+              throw new Error('Not found...');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

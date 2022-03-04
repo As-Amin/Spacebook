@@ -3,6 +3,9 @@ import {StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Image} 
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Account screen class allowing users to manage their profile,
@@ -53,36 +56,52 @@ class AccountScreen extends Component {
   * @return {fetch} Response from the fetch statement for getting users info.
   */
   getUserInfo = async () => {
-    // Store the user id as a constant - retrieved from async storage
-    const user = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 404) {
-            throw new Error('Cannot find user');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            userInfoData: responseJson,
+    let user = null;
+    let token = null;
+    try {
+      // Store the user id and auth token as constants
+      // retrieved from async storage and used to make the request.
+      user = await AsyncStorage.getItem('@user_id');
+      token = await AsyncStorage.getItem('@session_token');
+    } catch (error) {
+      toast.error('Something went wrong.');
+      console.log('There was an error retriving user id and token ' + error);
+      this.props.navigation.navigate('LoginScreen');
+    }
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 404) {
+              throw new Error('Cannot find user');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              userInfoData: responseJson,
+            });
+            this.getProfileImage();
+          })
+          .catch((error) =>{
+            console.log(error);
           });
-          this.getProfileImage();
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -90,26 +109,42 @@ class AccountScreen extends Component {
   * @return {fetch} Response from the fetch statement for signing out.
   */
   logOut = async () => {
-    const token = await AsyncStorage.getItem('@session_token');
+    let token = null;
+    try {
+      // Store the auth token as constants
+      // retrieved from async storage and used to make the request.
+      token = await AsyncStorage.getItem('@session_token');
+    } catch (error) {
+      toast.error('Something went wrong.');
+      console.log('There was an error retriving user id and token ' + error);
+      this.props.navigation.navigate('LoginScreen');
+    }
     await AsyncStorage.removeItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/logout', {
-      method: 'POST', // POST request as sending request to log out
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/logout', {
+        method: 'POST', // POST request as sending request to log out
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Sever error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -133,33 +168,51 @@ class AccountScreen extends Component {
         errorMessagePassword: 'Your password must be longer than 5 characters!',
       });
     }
-    const user = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
-      method: 'PATCH',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        first_name: this.state.firstName,
-        last_name: this.state.lastName,
-        email: this.state.email,
-        password: this.state.password,
-      }),
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            this.logOut();
-          } else if (response.status === 400) {
-            throw new Error('Failed validation');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    let user = null;
+    let token = null;
+    try {
+      // Store the user id and auth token as constants
+      // retrieved from async storage and used to make the request.
+      user = await AsyncStorage.getItem('@user_id');
+      token = await AsyncStorage.getItem('@session_token');
+    } catch (error) {
+      toast.error('Something went wrong.');
+      console.log('There was an error retriving user id and token ' + error);
+      this.props.navigation.navigate('LoginScreen');
+    }
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/user/' + user.toString(), {
+        method: 'PATCH',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          email: this.state.email,
+          password: this.state.password,
+        }),
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              this.logOut();
+            } else if (response.status === 400) {
+              throw new Error('Failed validation');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong.');
+      console.log('There was an error retriving user id and token ' + error);
+      this.props.navigation.navigate('LoginScreen');
+    }
   };
 
   /**
@@ -169,32 +222,49 @@ class AccountScreen extends Component {
   * to get users profile image.
   */
   getProfileImage = async () => {
-    const user = await AsyncStorage.getItem('@user_id');
-    const value = await AsyncStorage.getItem('@session_token');
-    fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/photo', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': value,
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.blob();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseBlob) => {
-          const data = URL.createObjectURL(responseBlob);
-          this.setState({
-            photo: data,
+    let user = null;
+    let token = null;
+    try {
+      // Store the user id and auth token as constants
+      // retrieved from async storage and used to make the request.
+      user = await AsyncStorage.getItem('@user_id');
+      token = await AsyncStorage.getItem('@session_token');
+    } catch (error) {
+      toast.error('Something went wrong.');
+      console.log('There was an error retriving user id and token ' + error);
+      this.props.navigation.navigate('LoginScreen');
+    }
+    try {
+      fetch('http://localhost:3333/api/1.0.0/user/' + user.toString() + '/photo', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token,
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.blob();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseBlob) => {
+            const data = URL.createObjectURL(responseBlob);
+            this.setState({
+              photo: data,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

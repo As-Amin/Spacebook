@@ -54,36 +54,44 @@ class FindFriendsScreen extends Component {
   * @return {fetch} Response from the fetch statement for getting all users.
   */
   getUsers = async () => {
-    // Store the auth key as a constant - retrieved from async storage
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            isLoading: false,
-            allUsersData: responseJson,
+    try {
+      // Store the auth key as a constant - retrieved from async storage,
+      // used to authenticate requests.
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/search', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              allUsersData: responseJson,
+            });
+            for (let i=0; i<this.state.allUsersData.length; i++) {
+              const item = responseJson[i];
+              this.getProfileImage(item.user_id);
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
           });
-          for (let i=0; i<this.state.allUsersData.length; i++) {
-            const item = responseJson[i];
-            this.getProfileImage(item.user_id);
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -92,31 +100,38 @@ class FindFriendsScreen extends Component {
   * which match the keywords in the search box.
   */
   findUser = async () => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            allUsersData: responseJson,
-            userToFind: '', // Reset user to find so can search new users
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              allUsersData: responseJson,
+              userToFind: '', // Reset user to find so can search new users
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -126,29 +141,36 @@ class FindFriendsScreen extends Component {
   * @return {fetch} Response from the fetch statement for adding a user.
   */
   addFriend = async (userId) => {
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
-      method: 'POST',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 201) {
-            toast.success('Request sent successfully!');
-            this.getUsers();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else if (response.status === 403) {
-            toast.error('Waiting for this user to accept your request!');
-            throw new Error('Already sent this person a friend request!');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    try {
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+        method: 'POST',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 201) {
+              toast.success('Request sent successfully!');
+              this.getUsers();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 403) {
+              toast.error('Waiting for this user to accept your request!');
+              throw new Error('Already sent this person a friend request!');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
@@ -159,33 +181,40 @@ class FindFriendsScreen extends Component {
   * friends.
   */
   getFriends = async () => {
+    try {
     // Store the auth key as a constant - retrieved from async storage
-    const userId = await AsyncStorage.getItem('@user_id');
-    const token = await AsyncStorage.getItem('@session_token');
-    return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
-      method: 'GET',
-      headers: {
-        'X-Authorization': token, // Assign the auth key to verify account
-      },
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 401) {
-            this.props.navigation.navigate('LoginScreen');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          this.setState({
-            userFriendsData: responseJson,
+      const userId = await AsyncStorage.getItem('@user_id');
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              userFriendsData: responseJson,
+            });
+            this.removeFriendsFromUsers();
+          })
+          .catch((error) =>{
+            console.log(error);
           });
-          this.removeFriendsFromUsers();
-        })
-        .catch((error) =>{
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

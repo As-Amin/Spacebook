@@ -2,6 +2,9 @@
 import {StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
 import {Colors} from '../constants/colors.js';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Sign up screen class allowing users to sign up to Spacebook.
@@ -36,10 +39,16 @@ class SignUpScreen extends Component {
     * @return {response} Response from the fetch statement for signing up.
   */
   signup = () => {
+    // Reset the email and password error messages prior to checking
+    // if the email and password are valid so they arent constantly being
+    // displayed if valid.
     this.setState({
       errorMessageEmail: '',
       errorMessagePassword: '',
     });
+    // Validation for the email and password strings - Display the
+    // error messages on failure of validation and re-render automatically
+    // on state change.
     if (!this.state.email.toString().toLowerCase().match(
         this.state.validateEmailString)) {
       this.setState({
@@ -53,34 +62,41 @@ class SignUpScreen extends Component {
       });
       return false;
     }
-    return fetch('http://localhost:3333/api/1.0.0/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        first_name: this.state.firstName,
-        last_name: this.state.lastName,
-        email: this.state.email,
-        password: this.state.password,
-      }),
-    })
-        .then((response) => {
-          if (response.status === 201) {
-            return response.json();
-          } else if (response.status === 400) {
-            throw new Error('User email is already in the system...');
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then((responseJson) => {
-          console.log('User created with ID: ', responseJson);
-          this.props.navigation.navigate('LoginScreen');
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          first_name: this.state.firstName,
+          last_name: this.state.lastName,
+          email: this.state.email,
+          password: this.state.password,
+        }),
+      })
+          .then((response) => {
+            if (response.status === 201) {
+              return response.json();
+            } else if (response.status === 400) {
+              throw new Error('User email is already in the system...');
+            } else if (response.status === 500) {
+              throw new Error('There was a server error.');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            console.log('User created with ID: ', responseJson);
+            this.props.navigation.navigate('LoginScreen');
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**

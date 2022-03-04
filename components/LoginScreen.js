@@ -4,6 +4,9 @@ import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../constants/colors.js';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+toast.configure();
 
 /**
  * Login screen class allowing users to login to their accounts.
@@ -36,11 +39,17 @@ class LoginScreen extends Component {
     * @return {response} Response from the fetch statement for logging in.
   */
   login = async () => {
+    // Reset the email and password error messages prior to checking
+    // if the email and password are valid so they arent constantly being
+    // displayed if valid.
     this.setState({
       errorMessageBoth: '',
       errorMessageEmail: '',
       errorMessagePassword: '',
     });
+    // Validation for the email and password strings - Display the
+    // error messages on failure of validation and re-render automatically
+    // on state change.
     if (!this.state.email.toString().toLowerCase().match(
         this.state.validateEmailString)) {
       this.setState({
@@ -54,40 +63,48 @@ class LoginScreen extends Component {
       });
       return false;
     }
-    return fetch('http://localhost:3333/api/1.0.0/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.state),
-    })
-        .then((response) => {
-          if (response.status === 200) {
-            return response.json();
-          } else if (response.status === 400) {
+    try {
+      return fetch('http://localhost:3333/api/1.0.0/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.state),
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 400) {
+              this.setState({
+                password: '',
+                errorMessageBoth:
+                  'Invalid email or password. Please try again.',
+              });
+              throw new 'Invalid email or password';
+            } else if (response.status === 500) {
+              throw new 'There was a server error';
+            } else {
+              throw new 'Something went wrong';
+            }
+          })
+          .then(async (responseJson) => {
+            await AsyncStorage.setItem('@user_id', responseJson.id);
+            await AsyncStorage.setItem('@session_token', responseJson.token);
+            // Reset email and password variables once logged in
+            // so not saved when logged out - Security
             this.setState({
+              email: '',
               password: '',
-              errorMessageBoth: 'Invalid email or password. Please try again.',
             });
-            throw new 'Invalid email or password';
-          } else {
-            throw new 'Something went wrong';
-          }
-        })
-        .then(async (responseJson) => {
-          await AsyncStorage.setItem('@user_id', responseJson.id);
-          await AsyncStorage.setItem('@session_token', responseJson.token);
-          // Reset email and password variables once logged in
-          // so not saved when logged out - Security
-          this.setState({
-            email: '',
-            password: '',
+            this.props.navigation.navigate('PostLoginScreen');
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          this.props.navigation.navigate('PostLoginScreen');
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
   };
 
   /**
