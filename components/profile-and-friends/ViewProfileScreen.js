@@ -396,9 +396,9 @@ class ViewProfileScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>
-            {this.state.friendFirstName}
             <Image style={styles.profileImage}
               source={{uri: this.state.photo}}/>
+            {' '}{this.state.friendFirstName}
           </Text>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
@@ -611,7 +611,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lineBreak,
   },
   profileImage: {
-    marginLeft: '55%',
     width: 40,
     height: 40,
     borderRadius: 400/2,
