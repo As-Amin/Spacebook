@@ -105,7 +105,7 @@ class ViewProfileScreen extends Component {
               allPostsData: responseJson,
               loggedInAccountUserId: user,
             });
-            this.getProfileImages();
+            this.getProfileImage();
           })
           .catch((error) => {
             console.log(error);
@@ -284,7 +284,7 @@ class ViewProfileScreen extends Component {
   * @return {fetch} Response from the fetch statement for patch request
   * to get users profile image.
   */
-  getProfileImages = async () => {
+  getProfileImage = async () => {
     try {
       const value = await AsyncStorage.getItem('@session_token');
       fetch('http://localhost:3333/api/1.0.0/user/' + this.state.userId.toString() + '/photo', {
@@ -379,9 +379,9 @@ class ViewProfileScreen extends Component {
   */
   postAndDeleteDraft = (draftPost) => {
     if (this.state.draftToPost.length !== 0) {
-      this.postOnProfile(this.state.draftToPost);
+      this.postOnProfile(this.state.draftToPost); // Post the changed draft
     } else {
-      this.postOnProfile(draftPost);
+      this.postOnProfile(draftPost); // Post the unchanged draft
     }
     this.deleteDraftPost(draftPost);
   };

@@ -26,7 +26,6 @@ class FindFriendsScreen extends Component {
       isLoading: true,
       allUsersData: [],
       userFriendsData: [],
-      photos: [],
     };
   }
 
@@ -80,10 +79,6 @@ class FindFriendsScreen extends Component {
               isLoading: false,
               allUsersData: responseJson,
             });
-            for (let i=0; i<this.state.allUsersData.length; i++) {
-              const item = responseJson[i];
-              this.getProfileImage(item.user_id);
-            }
           })
           .catch((error) =>{
             console.log(error);
@@ -232,7 +227,6 @@ class FindFriendsScreen extends Component {
         const friend = parseInt(this.state.userFriendsData[j]['user_id']);
         if (user === friend) {
           this.state.allUsersData.splice(i, 1);
-          this.state.photos.splice(i, 1);
         }
       }
     }
@@ -242,7 +236,6 @@ class FindFriendsScreen extends Component {
         const user = parseInt(this.state.allUsersData[i]['user_id']);
         if (user === parseInt(loggedInAccountUserId)) {
           this.state.allUsersData.splice(i, 1);
-          this.state.photos.splice(i, 1);
         }
       }
     }

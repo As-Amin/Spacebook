@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import 'react-native-gesture-handler';
 import FriendsScreen from './FriendsScreen';
-import GetFriendsPosts from '../profile-and-friends/ViewProfileScreen';
-import ViewSinglePost from '../profile-and-friends/ViewSinglePost';
-import UpdatePostScreen from '../profile-and-friends/UpdatePostScreen';
+import GetFriendsPosts from '../post-management/ViewProfileScreen';
+import ViewSinglePost from '../post-management/ViewSinglePost';
+import UpdatePostScreen from '../post-management/UpdatePostScreen';
 
 const Stack = createStackNavigator();
 
