@@ -53,6 +53,21 @@ class ViewDraftsScreen extends Component {
   }
 
   /**
+  * Function allowing user to schedule a post on a profile by calling the
+  * postOnProfile function after a certain amount of time.
+  * @param {String} textToPost The text that the user wants to post from
+  * the drafts or directly as a new post.
+  * @param {String} timeToPost The time required to wait before calling
+  * the post on profile function.
+  * @return {clearTimeout} Clears the timeout so the user can schedule another
+  * post with different scheduled time.
+  */
+  schedulePostOnProfile = ((textToPost, timeToPost) => {
+    const timer = setTimeout(() => console.log('Hello, World!'), 3000);
+    return () => clearTimeout(timer);
+  });
+
+  /**
   * Function allowing user to post on the profile of the friend or their
   * own profile.
   * @param {String} textToPost The text that the user wants to post from
@@ -238,7 +253,7 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.schedulePostOnProfile()}>
                     <Text style={styles.buttonText}>
                       {'Schedule'}
                     </Text>
