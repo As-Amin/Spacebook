@@ -29,6 +29,10 @@ class ViewDraftsScreen extends Component {
       // Store all of the draft posts
       allDraftPosts: [],
       draftToPost: '',
+      // Time to post the draft post
+      timerInputHours: '0',
+      timerInputMinutes: '0',
+      timerInputSeconds: '0',
     };
   }
 
@@ -57,14 +61,42 @@ class ViewDraftsScreen extends Component {
   * postOnProfile function after a certain amount of time.
   * @param {String} textToPost The text that the user wants to post from
   * the drafts or directly as a new post.
-  * @param {String} timeToPost The time required to wait before calling
-  * the post on profile function.
   * @return {clearTimeout} Clears the timeout so the user can schedule another
   * post with different scheduled time.
   */
-  schedulePostOnProfile = ((textToPost, timeToPost) => {
-    const timer = setTimeout(() => console.log('Hello, World!'), 3000);
-    return () => clearTimeout(timer);
+  schedulePostOnProfile = ((textToPost) => {
+    try {
+      toast.info('Post: "' +
+        textToPost.toString() +
+        '" scheduled successfully!');
+      // Convert the time to seconds as a string.
+      const timerConvertedHoursStr = (this.state.timerInputHours + '000');
+      const timerConvertedHoursInt = parseInt(timerConvertedHoursStr * 120);
+
+      const timerConvertedMinutesStr = (this.state.timerInputMinutes + '000');
+      const timerConvertedMinutesInt = parseInt(timerConvertedMinutesStr * 60);
+
+      const timerConvertedSecondsStr = (this.state.timerInputSeconds + '000');
+      const timerConvertedSecondsInt = parseInt(timerConvertedSecondsStr);
+
+      const totalTimeToPost = (
+        timerConvertedHoursInt +
+        timerConvertedMinutesInt +
+        timerConvertedSecondsInt);
+      // Post the draft to the profile and delete from the drafts
+      // after the timer has ended.
+      const postToProfile = setTimeout(() =>
+        this.postAndDeleteDraft(textToPost), totalTimeToPost);
+      this.setState({
+        timerInputHours: '0',
+        timerInputMinutes: '0',
+        timerInputSeconds: '0',
+      });
+      return () => clearTimeout(postToProfile);
+    } catch (error) {
+      toast.error('Something went wrong scheduling. Please try again!');
+      console.log(error);
+    }
   });
 
   /**
@@ -220,7 +252,7 @@ class ViewDraftsScreen extends Component {
           </Text>
           <View style={styles.postOnProfileView}>
             <TextInput style={styles.textInput}
-              placeholder="New draft post here..."
+              placeholder='New draft post here...'
               onChangeText={(userTextToPost) => this.setState({userTextToPost})}
               value={this.state.userTextToPost}/>
             <View style={styles.flexContainerButtons}>
@@ -253,15 +285,43 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.schedulePostOnProfile()}>
-                    <Text style={styles.buttonText}>
-                      {'Schedule'}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button}
                     onPress={() => this.deleteDraftPost(index)}>
                     <Text style={styles.buttonText}>
                       {'Delete'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.lineSeperatorDark}></View>
+                <Text style={styles.boldText}>
+                  {'Hours:'}
+                </Text>
+                <TextInput style={styles.textInputTime}
+                  onChangeText={(timerInputHours) =>
+                    this.setState({timerInputHours})}
+                  value={this.state.timerInputHours}
+                  maxLength={5}/>
+                <Text style={styles.boldText}>
+                  {'Minutes:'}
+                </Text>
+                <TextInput style={styles.textInputTime}
+                  onChangeText={(timerInputMinutes) =>
+                    this.setState({timerInputMinutes})}
+                  value={this.state.timerInputMinutes}
+                  maxLength={2}/>
+                <Text style={styles.boldText}>
+                  {'Seconds:'}
+                </Text>
+                <TextInput style={styles.textInputTime}
+                  onChangeText={(timerInputSeconds) =>
+                    this.setState({timerInputSeconds})}
+                  value={this.state.timerInputSeconds}
+                  maxLength={2}/>
+                <View style={styles.flexContainerButtons}>
+                  <TouchableOpacity style={styles.button}
+                    onPress={() =>
+                      this.schedulePostOnProfile(item)}>
+                    <Text style={styles.buttonText}>
+                      {'Schedule post'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -302,6 +362,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Colors.text,
+  },
+  textHighlight: {
+    paddingLeft: 7.5,
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Colors.theme,
   },
   title: {
     padding: 5,
@@ -355,11 +421,28 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.darkerBackground,
     color: Colors.text,
   },
+  textInputTime: {
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    backgroundColor: Colors.darkerBackground,
+    color: Colors.text,
+  },
   lineSeperator: {
     margin: 5,
     padding: 1,
     borderRadius: 10,
     backgroundColor: Colors.lineBreak,
+  },
+  lineSeperatorDark: {
+    margin: 5,
+    padding: 1,
+    borderRadius: 10,
+    backgroundColor: Colors.darkerBackground,
   },
 });
 

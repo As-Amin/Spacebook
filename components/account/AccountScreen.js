@@ -122,6 +122,7 @@ class AccountScreen extends Component {
       console.log('There was an error retriving user id and token ' + error);
       this.props.navigation.navigate('LoginScreen');
     }
+    await AsyncStorage.removeItem('@user_id');
     await AsyncStorage.removeItem('@session_token');
     try {
       return fetch('http://localhost:3333/api/1.0.0/logout', {
