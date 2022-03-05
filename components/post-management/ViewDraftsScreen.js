@@ -72,13 +72,10 @@ class ViewDraftsScreen extends Component {
       // Convert the time to seconds as a string.
       const timerConvertedHoursStr = (this.state.timerInputHours + '000');
       const timerConvertedHoursInt = parseInt(timerConvertedHoursStr * 120);
-
       const timerConvertedMinutesStr = (this.state.timerInputMinutes + '000');
       const timerConvertedMinutesInt = parseInt(timerConvertedMinutesStr * 60);
-
       const timerConvertedSecondsStr = (this.state.timerInputSeconds + '000');
       const timerConvertedSecondsInt = parseInt(timerConvertedSecondsStr);
-
       const totalTimeToPost = (
         timerConvertedHoursInt +
         timerConvertedMinutesInt +
@@ -270,13 +267,14 @@ class ViewDraftsScreen extends Component {
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
-                  {'Draft post: '} {'\n'}
+                  {'Draft post: '} {'\n'}{'\n'}
                 </Text>
                 <TextInput style={styles.textInputDraft}
                   placeholder={item}
                   onChangeText={(draftToPost) =>
                     this.setState({draftToPost})}
                   value={this.state.draftToPost} />
+                <View style={styles.lineSeperator}></View>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() => this.postAndDeleteDraft(item, index)}>
@@ -291,7 +289,9 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                 </View>
+                <View style={styles.lineSeperator}></View>
                 <View style={styles.lineSeperatorDark}></View>
+                <View style={styles.lineSeperator}></View>
                 <Text style={styles.boldText}>
                   {'Hours:'}
                 </Text>
@@ -316,6 +316,7 @@ class ViewDraftsScreen extends Component {
                     this.setState({timerInputSeconds})}
                   value={this.state.timerInputSeconds}
                   maxLength={2}/>
+                <View style={styles.lineSeperator}></View>
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
                     onPress={() =>

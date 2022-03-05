@@ -3,6 +3,6 @@ export const Colors = {
   darkerBackground: '#000000',
   lighterBackground: '#1e1e1e',
   lineBreak: '#1e1e1e',
-  theme: '#7c9de3',
+  theme: '#D08770',
   error: '#BF616A',
 };
