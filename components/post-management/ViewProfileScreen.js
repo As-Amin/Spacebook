@@ -28,12 +28,6 @@ class ViewProfileScreen extends Component {
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
       photo: '',
-      // Store all of the draft posts
-      allDraftPosts: [],
-      draftToPost: '',
-      // Whether to display drafts or not
-      renderDrafts: false,
-      renderDraftsButtonText: 'View drafts',
     };
   }
 
@@ -45,7 +39,6 @@ class ViewProfileScreen extends Component {
       this.checkLoggedIn();
       this.getPosts();
     });
-    this.getDraftPosts();
   }
 
   /**
@@ -318,93 +311,6 @@ class ViewProfileScreen extends Component {
   };
 
   /**
-  * Function getting draft posts and storing the posts in an array.
-  */
-  getDraftPosts = async () => {
-    try {
-      const drafts = await AsyncStorage.getItem('@draft_posts');
-      this.setState({allDraftPosts: JSON.parse(drafts)});
-    } catch (error) {
-      // Error getting data
-      console.log(error);
-    }
-  };
-
-  /**
-  * Function saving posts as drafts and storing the posts in async
-  * storage to post later.
-  * @param {String} draftPost The post text to save as a draft in async storage.
-  */
-  saveAsDraft = async (draftPost) => {
-    try {
-      // Check if the post length is bigger than 0
-      if (draftPost.toString().length > 0) {
-        // Add the draft to the draft post list
-        this.setState({allDraftPosts:
-          [...this.state.allDraftPosts, draftPost]});
-        await AsyncStorage.setItem('@draft_posts',
-            JSON.stringify(this.state.allDraftPosts));
-        this.setState({userTextToPost: ''});
-      }
-    } catch (error) {
-      // Error saving data
-      console.log(error);
-    }
-  };
-
-  /**
-  * Function deleting draft posts from the draft post array.
-  * @param {String} draftPostToDelete The post text to delete
-  * from async storage.
-  */
-  deleteDraftPost = (draftPostToDelete) => {
-    try {
-      for (let i=0; i<this.state.allDraftPosts.length; i++) {
-        const draftFound = this.state.allDraftPosts[i].toString();
-        if (draftPostToDelete.toString() === draftFound) {
-          this.state.allDraftPosts.splice(i, 1);
-        }
-      }
-      this.getPosts();
-    } catch (error) {
-      // Error deleting data
-      console.log(error);
-    }
-  };
-
-  /**
-  * Function posting drafts on the profile and deleting the draft post
-  * from the users draft post array.
-  * @param {String} draftPost The post text to post and delete from drafts.
-  */
-  postAndDeleteDraft = (draftPost) => {
-    if (this.state.draftToPost.length !== 0) {
-      this.postOnProfile(this.state.draftToPost); // Post the changed draft
-    } else {
-      this.postOnProfile(draftPost); // Post the unchanged draft
-    }
-    this.deleteDraftPost(draftPost);
-  };
-
-  /**
-  * Function which toggles the boolean to render drafts on the click of
-  * a button.
-  */
-  toggleRenderDrafts = () => {
-    if (this.state.renderDrafts === true) {
-      this.setState({
-        renderDrafts: false,
-        renderDraftsButtonText: 'View drafts',
-      });
-    } else if (this.state.renderDrafts === false) {
-      this.setState({
-        renderDrafts: true,
-        renderDraftsButtonText: 'Collapse drafts',
-      });
-    }
-  };
-
-  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -456,60 +362,17 @@ class ViewProfileScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}
-                onPress={() => this.saveAsDraft(this.state.userTextToPost)}>
+                onPress={() =>
+                  this.props.navigation.navigate('ViewDraftsScreen', {
+                    userId: this.state.userId,
+                  })}>
                 <Text style={styles.buttonText}>
-                  {'Save as draft'}
+                  {'View drafts'}
                 </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
-            <View style={styles.flexContainerButtons}>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.toggleRenderDrafts()}>
-                <Text style={styles.buttonText}>
-                  {this.state.renderDraftsButtonText}
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
-          {this.state.renderDrafts === true ?
-            <FlatList style={styles.flatList}
-              data={this.state.allDraftPosts}
-              keyExtractor={(item, index) => item + index}
-              renderItem={({item, index}) => (
-                <View style={styles.cardBackground}>
-                  <Text style={styles.boldText}>
-                    {'Draft post: '} {'\n'}
-                  </Text>
-                  <TextInput style={styles.textInputDraft}
-                    placeholder={item}
-                    onChangeText={(draftToPost) =>
-                      this.setState({draftToPost})}
-                    value={this.state.draftToPost} />
-                  <View style={styles.flexContainerButtons}>
-                    <TouchableOpacity style={styles.button}
-                      onPress={() => this.postAndDeleteDraft(item)}>
-                      <Text style={styles.buttonText}>
-                        {'Post'}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}
-                      onPress={() => console.log('worked')}>
-                      <Text style={styles.buttonText}>
-                        {'Schedule'}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}
-                      onPress={() => this.deleteDraftPost(item)}>
-                      <Text style={styles.buttonText}>
-                        {'Delete'}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-            /> :
-            <></> }
           <View style={styles.lineSeperator}></View>
           <FlatList style={styles.flatList}
             data={this.state.allPostsData}

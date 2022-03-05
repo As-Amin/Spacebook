@@ -4,6 +4,7 @@ import 'react-native-gesture-handler';
 import ProfileScreen from '../post-management/ViewProfileScreen';
 import ViewSinglePost from '../post-management/ViewSinglePost';
 import UpdatePostScreen from '../post-management/UpdatePostScreen';
+import ViewDraftsScreen from '../post-management/ViewDraftsScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,10 @@ class ProfileScreenNavigator extends Component {
         <Stack.Screen
           name='UpdatePostScreen'
           component={UpdatePostScreen}
+          options={{title: 'Back to profile'}}/>
+        <Stack.Screen
+          name='ViewDraftsScreen'
+          component={ViewDraftsScreen}
           options={{title: 'Back to profile'}}/>
       </Stack.Navigator>
     );
