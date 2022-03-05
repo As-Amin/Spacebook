@@ -22,7 +22,7 @@ class ViewDraftsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: true,
+      isLoading: false,
       userId: '', // ID of user whos profile is being displayed
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
@@ -38,10 +38,10 @@ class ViewDraftsScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
-      this.getDraftPosts();
       this.setState({
         userId: this.props.route.params.userId,
       });
+      this.getDraftPosts();
     });
   }
 
@@ -105,7 +105,6 @@ class ViewDraftsScreen extends Component {
       const drafts = await AsyncStorage.getItem('@draft_posts');
       this.setState({
         allDraftPosts: JSON.parse(drafts),
-        isLoading: false,
       });
     } catch (error) {
       // Error getting data
@@ -120,15 +119,12 @@ class ViewDraftsScreen extends Component {
   */
   saveAsDraft = async (draftPost) => {
     try {
-      // Check if the post length is bigger than 0
-      if (draftPost.toString().length > 0) {
-        // Add the draft to the draft post list
-        this.setState({allDraftPosts:
+      // Add the draft to the draft post list
+      this.setState({allDraftPosts:
           [...this.state.allDraftPosts, draftPost]});
-        await AsyncStorage.setItem('@draft_posts',
-            JSON.stringify(this.state.allDraftPosts));
-        this.setState({userTextToPost: ''});
-      }
+      await AsyncStorage.setItem('@draft_posts',
+          JSON.stringify(this.state.allDraftPosts));
+      this.setState({userTextToPost: ''});
     } catch (error) {
       // Error saving data
       console.log(error);
@@ -137,18 +133,16 @@ class ViewDraftsScreen extends Component {
 
   /**
   * Function deleting draft posts from the draft post array.
-  * @param {String} draftPostToDelete The post text to delete
+  * @param {String} index The post index to delete
   * from async storage.
   */
-  deleteDraftPost = (draftPostToDelete) => {
+  deleteDraftPost = async (index) => {
     try {
-      for (let i=0; i<this.state.allDraftPosts.length; i++) {
-        const draftFound = this.state.allDraftPosts[i].toString();
-        if (draftPostToDelete.toString() === draftFound) {
-          this.state.allDraftPosts.splice(i, 1);
-        }
-      }
-      this.getDraftPosts();
+      const draftPostsRemoveItem = this.state.allDraftPosts;
+      draftPostsRemoveItem.splice(index, 1);
+      this.setState({allDraftPosts: draftPostsRemoveItem});
+      await AsyncStorage.setItem('@draft_posts',
+          JSON.stringify(this.state.allDraftPosts));
     } catch (error) {
       // Error deleting data
       console.log(error);
@@ -218,6 +212,12 @@ class ViewDraftsScreen extends Component {
                   {'Save as draft'}
                 </Text>
               </TouchableOpacity>
+              <TouchableOpacity style={styles.button}
+                onPress={() => this.deleteAllDrafts()}>
+                <Text style={styles.buttonText}>
+                  {'Delete all'}
+                </Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
           </View>
@@ -248,7 +248,7 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.deleteDraftPost(item)}>
+                    onPress={() => this.deleteDraftPost(index)}>
                     <Text style={styles.buttonText}>
                       {'Delete'}
                     </Text>

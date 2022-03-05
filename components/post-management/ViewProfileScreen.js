@@ -373,7 +373,6 @@ class ViewProfileScreen extends Component {
             </View>
             <View style={styles.lineSeperator}></View>
           </View>
-          <View style={styles.lineSeperator}></View>
           <FlatList style={styles.flatList}
             data={this.state.allPostsData}
             keyExtractor={(item, index) => item.post_id.toString()}
