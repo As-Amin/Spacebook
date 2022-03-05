@@ -24,7 +24,7 @@ class ViewProfileScreen extends Component {
       isLoading: true,
       allPostsData: [],
       userId: '', // ID of user whos profile is being displayed
-      friendFirstName: 'My Profile', // Whos profile it is, to display at top
+      friendFirstName: 'My profile', // Whos profile it is, to display at top
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
       photo: '',
