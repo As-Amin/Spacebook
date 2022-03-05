@@ -22,7 +22,7 @@ class ViewDraftsScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
+      isLoading: true,
       userId: '', // ID of user whos profile is being displayed
       loggedInAccountUserId: '', // ID of user whos logged in
       userTextToPost: '',
@@ -38,10 +38,10 @@ class ViewDraftsScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
-      this.setState({
-        userId: this.props.route.params.userId,
-      });
-      this.getDraftPosts();
+    });
+    this.getDraftPosts();
+    this.setState({
+      userId: this.props.route.params.userId,
     });
   }
 
@@ -105,6 +105,7 @@ class ViewDraftsScreen extends Component {
       const drafts = await AsyncStorage.getItem('@draft_posts');
       this.setState({
         allDraftPosts: JSON.parse(drafts),
+        isLoading: false,
       });
     } catch (error) {
       // Error getting data
@@ -119,12 +120,12 @@ class ViewDraftsScreen extends Component {
   */
   saveAsDraft = async (draftPost) => {
     try {
-      // Add the draft to the draft post list
-      this.setState({allDraftPosts:
-          [...this.state.allDraftPosts, draftPost]});
+      const draftPostsAddItem = this.state.allDraftPosts;
+      draftPostsAddItem.push(draftPost);
+      this.setState({allDraftPosts: draftPostsAddItem});
       await AsyncStorage.setItem('@draft_posts',
           JSON.stringify(this.state.allDraftPosts));
-      this.setState({userTextToPost: ''});
+      this.getDraftPosts();
     } catch (error) {
       // Error saving data
       console.log(error);
@@ -143,6 +144,7 @@ class ViewDraftsScreen extends Component {
       this.setState({allDraftPosts: draftPostsRemoveItem});
       await AsyncStorage.setItem('@draft_posts',
           JSON.stringify(this.state.allDraftPosts));
+      this.getDraftPosts();
     } catch (error) {
       // Error deleting data
       console.log(error);
@@ -153,14 +155,15 @@ class ViewDraftsScreen extends Component {
   * Function posting drafts on the profile and deleting the draft post
   * from the users draft post array.
   * @param {String} draftPost The post text to post and delete from drafts.
+  * @param {String} index The index of the draft post in the array.
   */
-  postAndDeleteDraft = (draftPost) => {
+  postAndDeleteDraft = (draftPost, index) => {
     if (this.state.draftToPost.length !== 0) {
       this.postOnProfile(this.state.draftToPost); // Post the changed draft
     } else {
       this.postOnProfile(draftPost); // Post the unchanged draft
     }
-    this.deleteDraftPost(draftPost);
+    this.deleteDraftPost(index);
   };
 
   /**
@@ -212,18 +215,11 @@ class ViewDraftsScreen extends Component {
                   {'Save as draft'}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.deleteAllDrafts()}>
-                <Text style={styles.buttonText}>
-                  {'Delete all'}
-                </Text>
-              </TouchableOpacity>
             </View>
             <View style={styles.lineSeperator}></View>
           </View>
           <FlatList style={styles.flatList}
             data={this.state.allDraftPosts}
-            keyExtractor={(item, index) => item + index}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
@@ -236,7 +232,7 @@ class ViewDraftsScreen extends Component {
                   value={this.state.draftToPost} />
                 <View style={styles.flexContainerButtons}>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => this.postAndDeleteDraft(item)}>
+                    onPress={() => this.postAndDeleteDraft(item, index)}>
                     <Text style={styles.buttonText}>
                       {'Post'}
                     </Text>
