@@ -177,8 +177,24 @@ class ViewDraftsScreen extends Component {
   };
 
   /**
+  * Function saving edited drafts as drafts and storing the posts
+  * in async storage to post later.
+  * @param {Integer} index The index of the post to save as a new
+  * edited draft.
+  */
+  saveEditedDraft = (index) => {
+    try {
+      this.saveAsDraft(this.state.draftToPost);
+      this.deleteDraftPost(index);
+    } catch (error) {
+      // Error saving data
+      console.log(error);
+    }
+  };
+
+  /**
   * Function deleting draft posts from the draft post array.
-  * @param {String} index The post index to delete
+  * @param {Integer} index The post index to delete
   * from async storage.
   */
   deleteDraftPost = async (index) => {
@@ -283,7 +299,7 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
-                    onPress={() => console.log('worked')}>
+                    onPress={() => this.saveEditedDraft(index)}>
                     <Text style={styles.buttonText}>
                       {'Save'}
                     </Text>
