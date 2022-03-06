@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
+import {StyleSheet, View, Text, FlatList} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -23,7 +23,6 @@ class FriendViewFriendsScreen extends Component {
     this.state = {
       isLoading: true,
       userFriendsData: [],
-      userToFind: '',
       friendId: '',
       friendFirstName: '',
     };
@@ -91,47 +90,6 @@ class FriendViewFriendsScreen extends Component {
   };
 
   /**
-  * Function loading all of the users friends from the server with
-  * keywords in their name included from the search box input.
-  * @return {fetch} Response from the fetch statement for getting all
-  * friends.
-  */
-  findUser = async () => {
-    try {
-      const token = await AsyncStorage.getItem('@session_token');
-      return fetch('http://localhost:3333/api/1.0.0/search?q=' + this.state.userToFind.toString() + '&limit=20&search_in=friends', {
-        method: 'GET',
-        headers: {
-          'X-Authorization': token, // Assign the auth key to verify account
-        },
-      })
-          .then((response) => {
-            if (response.status === 200) {
-              return response.json();
-            } else if (response.status === 401) {
-              this.props.navigation.navigate('LoginScreen');
-            } else if (response.status === 500) {
-              throw new Error('Server error');
-            } else {
-              throw new Error('Something went wrong');
-            }
-          })
-          .then((responseJson) => {
-            this.setState({
-              userFriendsData: responseJson,
-              userToFind: '', // Reset user to find so can search new users
-            });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    } catch (error) {
-      toast.error('Something went wrong. Please try again!');
-      console.log('There was an error making the request: ' + error);
-    }
-  };
-
-  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -168,27 +126,6 @@ class FriendViewFriendsScreen extends Component {
           <Text style={styles.title}>
             {this.state.friendFirstName + '\'s friends'}
           </Text>
-          <View style={styles.searchUserView}>
-            <TextInput style={styles.textInput}
-              placeholder="Enter friend name here..."
-              onChangeText={(userToFind) => this.setState({userToFind})}
-              value={this.state.userToFind}/>
-            <View style={styles.flexContainerButtons}>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.findUser(this.state.userToFind)}>
-                <Text style={styles.buttonText}>
-                  {'Search'}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}
-                onPress={() => this.getFriends()}>
-                <Text style={styles.buttonText}>
-                  {'Reset'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.lineSeperator}></View>
-          </View>
           <FlatList style={styles.flatList}
             data={this.state.userFriendsData}
             renderItem={({item, index}) => (
