@@ -164,8 +164,9 @@ class ViewDraftsScreen extends Component {
   */
   saveAsDraft = async (draftPost) => {
     try {
-      const draftPostsAddItem = this.state.allDraftPosts;
-      draftPostsAddItem.push(draftPost);
+      let draftPostsAddItem = [];
+      draftPostsAddItem = this.state.allDraftPosts;
+      draftPostsAddItem.push(draftPost.toString());
       this.setState({allDraftPosts: draftPostsAddItem});
       await AsyncStorage.setItem('@draft_posts',
           JSON.stringify(this.state.allDraftPosts));
@@ -199,7 +200,8 @@ class ViewDraftsScreen extends Component {
   */
   deleteDraftPost = async (index) => {
     try {
-      const draftPostsRemoveItem = this.state.allDraftPosts;
+      let draftPostsRemoveItem = [];
+      draftPostsRemoveItem = this.state.allDraftPosts;
       draftPostsRemoveItem.splice(index, 1);
       this.setState({allDraftPosts: draftPostsRemoveItem});
       await AsyncStorage.setItem('@draft_posts',
