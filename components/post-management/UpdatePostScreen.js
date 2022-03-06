@@ -113,7 +113,7 @@ class UpdatePostScreen extends Component {
             // If the friends first name is passed in, go to the friends screen,
             // or if the first first name hasn't changed from 'profile' go back
             // to profile screen
-              if (this.props.route.params.friendFirstName === 'Profile') {
+              if (this.props.route.params.friendFirstName === 'My profile') {
                 this.props.navigation.navigate('ProfileScreen');
               } else {
                 this.props.navigation.navigate('FriendsScreen');
