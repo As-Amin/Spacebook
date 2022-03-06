@@ -6,6 +6,7 @@ import GetFriendsPosts from '../post-management/ViewProfileScreen';
 import ViewSinglePost from '../post-management/ViewSinglePost';
 import UpdatePostScreen from '../post-management/UpdatePostScreen';
 import ViewDraftsScreen from '../post-management/ViewDraftsScreen';
+import FriendViewFriendsScreen from './FriendViewFriendsScreen';
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,10 @@ class FriendsScreenNavigator extends Component {
         <Stack.Screen
           name='ViewDraftsScreen'
           component={ViewDraftsScreen}
+          options={{title: 'Back to friends profile'}}/>
+        <Stack.Screen
+          name='FriendViewFriendsScreen'
+          component={FriendViewFriendsScreen}
           options={{title: 'Back to friends profile'}}/>
       </Stack.Navigator>
     );

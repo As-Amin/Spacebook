@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput, Image} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from '../../constants/colors.js';
@@ -8,11 +8,11 @@ import 'react-toastify/dist/ReactToastify.css';
 toast.configure();
 
 /**
- * Friends screen to display the friends of the user, allowing users
- * to view, add and interact with profiles.
+ * Friends view their friends screen to display the friends
+ * of the friend selected as a list.
  * @return {render} Renders the account screen.
 */
-class FriendsScreen extends Component {
+class FriendViewFriendsScreen extends Component {
   /**
   * Constuctor for the friends screen component class inheriting
   * properties from the Component class
@@ -24,7 +24,8 @@ class FriendsScreen extends Component {
       isLoading: true,
       userFriendsData: [],
       userToFind: '',
-      photos: [],
+      friendId: '',
+      friendFirstName: '',
     };
   }
 
@@ -34,6 +35,10 @@ class FriendsScreen extends Component {
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
+    });
+    this.setState({
+      friendId: this.props.route.params.friendId,
+      friendFirstName: this.props.route.params.friendFirstName,
     });
     this.getFriends();
   }
@@ -52,10 +57,8 @@ class FriendsScreen extends Component {
   */
   getFriends = async () => {
     try {
-    // Store the auth key as a constant - retrieved from async storage
-      const userId = await AsyncStorage.getItem('@user_id');
       const token = await AsyncStorage.getItem('@session_token');
-      return fetch('http://localhost:3333/api/1.0.0/user/' + userId.toString() + '/friends', {
+      return fetch('http://localhost:3333/api/1.0.0/user/' + this.state.friendId.toString() + '/friends', {
         method: 'GET',
         headers: {
           'X-Authorization': token, // Assign the auth key to verify account
@@ -77,10 +80,6 @@ class FriendsScreen extends Component {
               isLoading: false,
               userFriendsData: responseJson,
             });
-            for (let i=0; i<this.state.userFriendsData.length; i++) {
-              const item = responseJson[i];
-              this.getProfileImage(item.user_id);
-            }
           })
           .catch((error) =>{
             console.log(error);
@@ -133,48 +132,6 @@ class FriendsScreen extends Component {
   };
 
   /**
-  * Function retrieving the users profile image from the server so it can
-  * be viewed and updated.
-  * @param {int} userToGetImageFor The user id for the user to get the profile
-  * image of.
-  * @return {fetch} Response from the fetch statement for patch request
-  * to get users profile image.
-  */
-  getProfileImage = async (userToGetImageFor) => {
-    try {
-      let data = '';
-      const value = await AsyncStorage.getItem('@session_token');
-      fetch('http://localhost:3333/api/1.0.0/user/' + userToGetImageFor.toString() + '/photo', {
-        method: 'GET',
-        headers: {
-          'X-Authorization': value,
-        },
-      })
-          .then((response) => {
-            if (response.status === 200) {
-              return response.blob();
-            } else if (response.status === 401) {
-              this.props.navigation.navigate('LoginScreen');
-            } else if (response.status === 500) {
-              throw new Error('Server error');
-            } else {
-              throw new Error('Something went wrong');
-            }
-          })
-          .then((responseBlob) => {
-            data = URL.createObjectURL(responseBlob);
-            this.setState({photos: [...this.state.photos, data]});
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-    } catch (error) {
-      toast.error('Something went wrong. Please try again!');
-      console.log('There was an error making the request: ' + error);
-    }
-  };
-
-  /**
   * Function checking if user is logged in and if they arent,
   * renavigating to the login screen - increasing security.
   */
@@ -196,7 +153,7 @@ class FriendsScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>
-            {'Friends'}
+            {this.state.friendFirstName + '\'s friends'}
           </Text>
           <FlatList style={styles.flatList}>
             <Text style={styles.text}>
@@ -209,7 +166,7 @@ class FriendsScreen extends Component {
       return (
         <View style={styles.flexContainer}>
           <Text style={styles.title}>
-            {'Friends'}
+            {this.state.friendFirstName + '\'s friends'}
           </Text>
           <View style={styles.searchUserView}>
             <TextInput style={styles.textInput}
@@ -236,38 +193,10 @@ class FriendsScreen extends Component {
             data={this.state.userFriendsData}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
-                <View style={styles.backgroundNameImage}>
-                  <Image style={styles.profileImage}
-                    source={{uri: this.state.photos[index]}}/>
-                  <Text style={styles.usernameText}>
-                    {'  Friend name: ' + item.user_givenname + ' ' +
+                <Text style={styles.usernameText}>
+                  {'Friend name: ' + item.user_givenname + ' ' +
                   item.user_familyname} {'\n'}{'\n'}
-                  </Text>
-                </View>
-                <View style={styles.flexContainerButtons}>
-                  <TouchableOpacity style={styles.button}
-                    onPress={() =>
-                      this.props.navigation.navigate(
-                          'GetFriendsPostsScreen', {
-                            friendId: item.user_id,
-                            friendFirstName: item.user_givenname,
-                          })}>
-                    <Text style={styles.buttonText}>
-                      {'View and add posts'}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button}
-                    onPress={() =>
-                      this.props.navigation.navigate(
-                          'FriendViewFriendsScreen', {
-                            friendId: item.user_id,
-                            friendFirstName: item.user_givenname,
-                          })}>
-                    <Text style={styles.buttonText}>
-                      {'View friends'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                </Text>
               </View>
             )}
             keyExtractor={(item, index) => item.user_id.toString()}
@@ -374,4 +303,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FriendsScreen;
+export default FriendViewFriendsScreen;

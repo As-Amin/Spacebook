@@ -283,6 +283,12 @@ class ViewDraftsScreen extends Component {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button}
+                    onPress={() => console.log('worked')}>
+                    <Text style={styles.buttonText}>
+                      {'Save'}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button}
                     onPress={() => this.deleteDraftPost(index)}>
                     <Text style={styles.buttonText}>
                       {'Delete'}
