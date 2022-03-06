@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import ProfileScreenNavigator from './profile/ProfileScreenNavigator';
-import FriendsScreenNavigator from './friends/FriendsScreenNavigator';
-import AccountScreenNavigator from './account/AccountScreenNavigator';
-import FriendRequestsScreen from './friend-requests/FriendRequestsScreen';
-import FindFriendsScreen from './find-friends/FindFriendsScreen';
+// eslint-disable-next-line max-len
+import ProfileScreenNavigator from '../../components/profile/ProfileScreenNavigator';
+// eslint-disable-next-line max-len
+import FriendsScreenNavigator from '../../components/friends/FriendsScreenNavigator';
+// eslint-disable-next-line max-len
+import AccountScreenNavigator from '../../components/account/AccountScreenNavigator';
+// eslint-disable-next-line max-len
+import FriendRequestsScreen from '../../components/friend-requests/FriendRequestsScreen';
+import FindFriendsScreen from '../../components/find-friends/FindFriendsScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Colors} from '../constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 
 const Tab = createBottomTabNavigator();
 

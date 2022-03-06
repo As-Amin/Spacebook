@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import LoginScreen from './components/LoginScreen';
-import SignUpScreen from './components/SignUpScreen';
-import PostLoginScreen from './components/PostLoginScreen';
+import LoginScreen from './components/setup-account/LoginScreen';
+import SignUpScreen from './components/setup-account/SignUpScreen';
+import PostLoginScreen from './components/setup-account/PostLoginScreen';
 import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Colors} from './constants/colors.js';

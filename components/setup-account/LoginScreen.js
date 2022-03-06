@@ -2,7 +2,7 @@
 import {Text, TouchableOpacity, StyleSheet, View, TextInput, ScrollView} from 'react-native';
 import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Colors} from '../constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

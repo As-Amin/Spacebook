@@ -1,7 +1,7 @@
 // eslint-disable-next-line max-len
 import {StyleSheet, View, Text, ScrollView, TextInput, TouchableOpacity} from 'react-native';
 import React, {Component} from 'react';
-import {Colors} from '../constants/colors.js';
+import {Colors} from '../../constants/colors.js';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 toast.configure();
