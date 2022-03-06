@@ -105,7 +105,7 @@ class UpdatePostScreen extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: this.state.userTextToPost,
+          text: this.state.userTextToPost.toString(),
         }),
       })
           .then((response) => {
@@ -118,7 +118,9 @@ class UpdatePostScreen extends Component {
               } else {
                 this.props.navigation.navigate('FriendsScreen');
               }
-              return response.json();
+              this.setState({
+                userTextToPost: '',
+              });
             } else if (response.status === 401) {
               this.props.navigation.navigate('LoginScreen');
             } else if (response.status === 403) {
@@ -128,11 +130,6 @@ class UpdatePostScreen extends Component {
             } else {
               throw new Error('Something went wrong');
             }
-          })
-          .then(() => {
-            this.setState({
-              userTextToPost: '',
-            });
           })
           .catch((error) => {
             console.log(error);
