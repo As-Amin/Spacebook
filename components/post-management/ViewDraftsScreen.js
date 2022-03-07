@@ -147,10 +147,20 @@ class ViewDraftsScreen extends Component {
   getDraftPosts = async () => {
     try {
       const drafts = await AsyncStorage.getItem('@draft_posts');
-      this.setState({
-        allDraftPosts: JSON.parse(drafts),
-        isLoading: false,
-      });
+      if (JSON.parse(drafts) === null) {
+        let draftPostsAddItem = [];
+        draftPostsAddItem = this.state.allDraftPosts;
+        draftPostsAddItem.push('New draft!');
+        this.setState({
+          allDraftPosts: draftPostsAddItem,
+          isLoading: false,
+        });
+      } else {
+        this.setState({
+          allDraftPosts: JSON.parse(drafts),
+          isLoading: false,
+        });
+      }
     } catch (error) {
       // Error getting data
       console.log(error);
