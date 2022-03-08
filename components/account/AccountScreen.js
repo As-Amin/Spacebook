@@ -167,11 +167,13 @@ class AccountScreen extends Component {
       this.setState({
         errorMessageEmail: 'Your email address is not valid!',
       });
+      return false;
     }
     if (this.state.password.toString().length < 6) {
       this.setState({
         errorMessagePassword: 'Your password must be longer than 5 characters!',
       });
+      return false;
     }
     let user = null;
     let token = null;
