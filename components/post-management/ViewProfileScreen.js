@@ -387,7 +387,7 @@ class ViewProfileScreen extends Component {
                 </Text>
                 <Text style={styles.boldText}>
                   {new Date(item.timestamp).getHours() + ':' +
-                    new Date(item.timestamp).getMinutes() +
+                    ('0' + new Date(item.timestamp).getMinutes()).substr(-2) +
                     ' | ' + new Date(item.timestamp).toDateString() +
                     ' | Likes: ' + item.numLikes} {'\n'}{'\n'}
                 </Text>
