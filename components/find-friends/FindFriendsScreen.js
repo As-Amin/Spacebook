@@ -294,7 +294,6 @@ class FindFriendsScreen extends Component {
         const user = parseInt(this.state.allUsersData[i]['user_id']);
         const friend = parseInt(this.state.friendRequestsData[j]['user_id']);
         if (user === friend) {
-          console.log(user);
           let removeItem = [];
           removeItem = this.state.allUsersData;
           removeItem.splice(i, 1);
