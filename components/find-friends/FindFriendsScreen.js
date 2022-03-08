@@ -294,10 +294,7 @@ class FindFriendsScreen extends Component {
         const user = parseInt(this.state.allUsersData[i]['user_id']);
         const friend = parseInt(this.state.friendRequestsData[j]['user_id']);
         if (user === friend) {
-          let removeItem = [];
-          removeItem = this.state.allUsersData;
-          removeItem.splice(i, 1);
-          this.setState({allUsersData: removeItem});
+          this.state.allUsersData.splice(i, 1);
         }
       }
     }
@@ -322,6 +319,7 @@ class FindFriendsScreen extends Component {
   reset = () => {
     this.getUsers();
     this.getFriends();
+    this.getFriendRequests();
   };
 
   /**
