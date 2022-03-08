@@ -26,6 +26,7 @@ class FindFriendsScreen extends Component {
       isLoading: true,
       allUsersData: [],
       userFriendsData: [],
+      friendRequestsData: [],
     };
   }
 
@@ -37,6 +38,7 @@ class FindFriendsScreen extends Component {
       this.checkLoggedIn();
       this.getUsers();
       this.getFriends();
+      this.getFriendRequests();
     });
   }
 
@@ -76,7 +78,6 @@ class FindFriendsScreen extends Component {
           })
           .then((responseJson) => {
             this.setState({
-              isLoading: false,
               allUsersData: responseJson,
             });
           })
@@ -213,6 +214,48 @@ class FindFriendsScreen extends Component {
   };
 
   /**
+  * Function loading all of the users friend requests from the server.
+  * @return {fetch} Response from the fetch statement for getting all
+  * friend requests.
+  */
+  getFriendRequests = async () => {
+    try {
+      // Store the auth key as a constant - retrieved from async storage
+      const token = await AsyncStorage.getItem('@session_token');
+      return fetch('http://localhost:3333/api/1.0.0/friendrequests', {
+        method: 'GET',
+        headers: {
+          'X-Authorization': token, // Assign the auth key to verify account
+        },
+      })
+          .then((response) => {
+            if (response.status === 200) {
+              return response.json();
+            } else if (response.status === 401) {
+              this.props.navigation.navigate('LoginScreen');
+            } else if (response.status === 500) {
+              throw new Error('Server error');
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then((responseJson) => {
+            this.setState({
+              isLoading: false,
+              friendRequestsData: responseJson,
+            });
+            this.removeRequestsFromUsers();
+          })
+          .catch((error) =>{
+            console.log(error);
+          });
+    } catch (error) {
+      toast.error('Something went wrong. Please try again!');
+      console.log('There was an error making the request: ' + error);
+    }
+  };
+
+  /**
   * Function which removes all of the users friends list aswell as
   * the user from list of all users add as friends as they are
   * already friends and they cannot add themselves, and this
@@ -236,6 +279,26 @@ class FindFriendsScreen extends Component {
         const user = parseInt(this.state.allUsersData[i]['user_id']);
         if (user === parseInt(loggedInAccountUserId)) {
           this.state.allUsersData.splice(i, 1);
+        }
+      }
+    }
+  };
+
+  /**
+  * Function which removes all of the logged in users list of users
+  * that are in their friend requests list.
+  */
+  removeRequestsFromUsers = () => {
+    for (let i=0; i<this.state.allUsersData.length; i++) {
+      for (let j=0; j<this.state.friendRequestsData.length; j++) {
+        const user = parseInt(this.state.allUsersData[i]['user_id']);
+        const friend = parseInt(this.state.friendRequestsData[j]['user_id']);
+        if (user === friend) {
+          console.log(user);
+          let removeItem = [];
+          removeItem = this.state.allUsersData;
+          removeItem.splice(i, 1);
+          this.setState({allUsersData: removeItem});
         }
       }
     }

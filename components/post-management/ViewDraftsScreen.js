@@ -147,10 +147,11 @@ class ViewDraftsScreen extends Component {
   getDraftPosts = async () => {
     try {
       const drafts = await AsyncStorage.getItem('@draft_posts');
-      if (JSON.parse(drafts) === null) {
+      // If the drafts is empty, add a new draft post
+      if (JSON.parse(drafts) === null || JSON.parse(drafts).length === 0) {
         let draftPostsAddItem = [];
         draftPostsAddItem = this.state.allDraftPosts;
-        draftPostsAddItem.push('New draft!');
+        draftPostsAddItem.push('New draft.');
         this.setState({
           allDraftPosts: draftPostsAddItem,
           isLoading: false,
@@ -292,6 +293,7 @@ class ViewDraftsScreen extends Component {
           </View>
           <FlatList style={styles.flatList}
             data={this.state.allDraftPosts}
+            keyExtractor={(item, index) => item + index}
             renderItem={({item, index}) => (
               <View style={styles.cardBackground}>
                 <Text style={styles.boldText}>
